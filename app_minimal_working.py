@@ -48,6 +48,9 @@ try:
     import json
     from datetime import datetime
     from cryptography.fernet import Fernet
+    import threading
+    import time
+    from functools import lru_cache
     import base64
     import smtplib
     from email.mime.multipart import MIMEMultipart
@@ -55,9 +58,25 @@ try:
     from email.mime.image import MIMEImage
     print("✅ All imports successful", flush=True)
 
-    # Create Flask app
+    # Create Flask app with performance optimizations
     app = Flask(__name__)
     app.config['SECRET_KEY'] = SECRET_KEY if SECRET_KEY != 'NOT FOUND' else 'fallback-secret-key'
+    
+    # Performance optimizations
+    app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 year cache for static files
+    app.config['TEMPLATES_AUTO_RELOAD'] = False  # Disable template auto-reload in production
+    app.config['JSON_SORT_KEYS'] = False  # Don't sort JSON keys for faster response
+    
+    # Add compression for responses
+    @app.after_request
+    def after_request(response):
+        # Add caching headers for static content
+        if request.endpoint == 'static':
+            response.headers['Cache-Control'] = 'public, max-age=31536000'
+        # Add security headers
+        response.headers['X-Content-Type-Options'] = 'nosniff'
+        response.headers['X-Frame-Options'] = 'DENY'
+        return response
 
     # Email configuration
     app.config['MAIL_SERVER'] = os.environ.get('SMTP_SERVER', 'smtp.gmail.com')
@@ -70,11 +89,33 @@ try:
 
     socketio = SocketIO(app, cors_allowed_origins="*")
 
-    # Excel file path and in-memory storage
+    # Excel file path and in-memory storage with caching
     EXCEL_FILE = 'teams_backup.xlsx'
     teams_data = []
+    
+    # Performance cache
+    cache = {
+        'stats': {'data': None, 'timestamp': 0, 'ttl': 30},  # Cache stats for 30 seconds
+        'teams': {'data': None, 'timestamp': 0, 'ttl': 10},  # Cache teams for 10 seconds
+    }
 
     print("✅ Flask app and SocketIO created", flush=True)
+    
+    # Cache helper functions
+    def get_cached_data(cache_key):
+        """Get data from cache if not expired"""
+        cache_entry = cache.get(cache_key, {})
+        current_time = time.time()
+        
+        if (cache_entry.get('data') is not None and 
+            current_time - cache_entry.get('timestamp', 0) < cache_entry.get('ttl', 0)):
+            return cache_entry['data']
+        return None
+    
+    def set_cached_data(cache_key, data):
+        """Set data in cache with timestamp"""
+        cache[cache_key]['data'] = data
+        cache[cache_key]['timestamp'] = time.time()
 
     # Database configuration
     USE_POSTGRES = DATABASE_URL.startswith('postgresql://') and POSTGRES_AVAILABLE
@@ -158,7 +199,7 @@ try:
             return False
 
     def init_database():
-        """Initialize database tables"""
+        """Initialize database tables - optimized"""
         print("=== Initializing Database ===", flush=True)
         try:
             conn = get_db_connection()
@@ -447,8 +488,11 @@ Team Registration System
     # Routes
     @app.route('/')
     def index():
-        """Home page with navigation"""
-        return render_template('index.html')
+        """Home page with navigation - optimized"""
+        response = app.make_response(render_template('index.html'))
+        # Add caching headers for faster loading
+        response.headers['Cache-Control'] = 'public, max-age=300'  # 5 minutes
+        return response
 
     @app.route('/register')
     def register_page():
@@ -810,8 +854,13 @@ Team Registration System
 
     @app.route('/api/teams')
     def get_teams():
-        """API endpoint to get all teams from database"""
-        teams = execute_query('SELECT * FROM teams ORDER BY created_at DESC', fetch_all=True) or []
+        """API endpoint to get all teams from database with caching"""
+        # Try to get from cache first
+        cached_teams = get_cached_data('teams')
+        if cached_teams:
+            return jsonify(cached_teams)
+        
+        teams = execute_query('SELECT * FROM teams ORDER BY created_at DESC LIMIT 100', fetch_all=True) or []
         
         # Convert datetime objects to strings for JSON serialization
         for team in teams:
@@ -822,11 +871,19 @@ Team Registration System
                 if not isinstance(team['validated_at'], str):
                     team['validated_at'] = team['validated_at'].isoformat()
         
+        # Cache the results
+        set_cached_data('teams', teams)
+        
         return jsonify(teams)
 
     @app.route('/api/stats')
     def get_stats():
-        """API endpoint to get team statistics from database"""
+        """API endpoint to get team statistics from database with caching"""
+        # Try to get from cache first
+        cached_stats = get_cached_data('stats')
+        if cached_stats:
+            return jsonify(cached_stats)
+        
         stats = {'total': 0, 'validated': 0, 'playing': 0, 'completed': 0}
         
         try:
@@ -834,21 +891,31 @@ Team Registration System
             if conn:
                 cur = get_cursor(conn)
                 
-                # Get statistics from database
-                queries = [
-                    ('SELECT COUNT(*) FROM teams', 'total'),
-                    ("SELECT COUNT(*) FROM teams WHERE validation_status = 'Validated'", 'validated'),
-                    ("SELECT COUNT(*) FROM teams WHERE match_status = 'Playing'", 'playing'),
-                    ("SELECT COUNT(*) FROM teams WHERE match_status = 'Completed'", 'completed')
-                ]
+                # Single optimized query instead of multiple queries
+                cur.execute("""
+                    SELECT 
+                        COUNT(*) as total,
+                        COUNT(CASE WHEN validation_status = 'Validated' THEN 1 END) as validated,
+                        COUNT(CASE WHEN match_status = 'Playing' THEN 1 END) as playing,
+                        COUNT(CASE WHEN match_status = 'Completed' THEN 1 END) as completed
+                    FROM teams
+                """)
                 
-                for query, key in queries:
-                    cur.execute(query)
-                    result = cur.fetchone()
-                    stats[key] = result[0] if result else 0
+                result = cur.fetchone()
+                if result:
+                    stats = {
+                        'total': result[0] if result[0] else 0,
+                        'validated': result[1] if result[1] else 0,
+                        'playing': result[2] if result[2] else 0,
+                        'completed': result[3] if result[3] else 0
+                    }
                 
                 cur.close()
                 conn.close()
+                
+                # Cache the results
+                set_cached_data('stats', stats)
+                
         except Exception as e:
             print(f"Stats query error: {e}")
         

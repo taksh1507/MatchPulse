@@ -1,1 +1,1 @@
-web: gunicorn --bind 0.0.0.0:$PORT --timeout 120 wsgi:application
+web: gunicorn --bind 0.0.0.0:$PORT --timeout 120 --workers 2 --worker-connections 1000 --max-requests 1000 --max-requests-jitter 100 --preload wsgi:application

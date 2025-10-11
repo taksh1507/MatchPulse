@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block title %}Validate QR Code - Team Registration System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-qrcode"></i> QR Code Validation</h4>
+            </div>
+            <div class="card-body">
+                <div class="mobile-scanner">
+                    <div id="qr-reader" style="width: 100%;"></div>
+                    <div id="qr-reader-results" class="mt-3"></div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Instructions:</h6>
+                        <ul class="mb-0">
+                            <li>Point your camera at the team's QR code</li>
+                            <li>Ensure good lighting for best results</li>
+                            <li>QR code will be validated automatically</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="validation-result" class="mt-3"></div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <button id="start-scan" class="btn btn-success">
+                        <i class="fas fa-camera"></i> Start Scanning
+                    </button>
+                    <button id="stop-scan" class="btn btn-danger" style="display: none;">
+                        <i class="fas fa-stop"></i> Stop Scanning
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+    let html5QrcodeScanner;
+    let isScanning = false;
+    
+    document.getElementById('start-scan').addEventListener('click', startScanning);
+    document.getElementById('stop-scan').addEventListener('click', stopScanning);
+    
+    function startScanning() {
+        if (isScanning) return;
+        
+        html5QrcodeScanner = new Html5QrcodeScanner(
+            "qr-reader",
+            { 
+                fps: 10, 
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0
+            },
+            false
+        );
+        
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+        
+        document.getElementById('start-scan').style.display = 'none';
+        document.getElementById('stop-scan').style.display = 'block';
+        isScanning = true;
+    }
+    
+    function stopScanning() {
+        if (!isScanning) return;
+        
+        html5QrcodeScanner.clear();
+        document.getElementById('start-scan').style.display = 'block';
+        document.getElementById('stop-scan').style.display = 'none';
+        isScanning = false;
+    }
+    
+    function onScanSuccess(decodedText, decodedResult) {
+        console.log(`QR Code detected: ${decodedText}`);
+        
+        // Stop scanning
+        stopScanning();
+        
+        // Show loading
+        document.getElementById('validation-result').innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-spinner fa-spin"></i> Validating QR code...
+            </div>
+        `;
+        
+        // Send to server for validation
+        fetch('/validate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ qr_data: decodedText })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('validation-result').innerHTML = `
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-check-circle"></i> Validation Successful!</h5>
+                        <p><strong>Team ID:</strong> ${data.team.team_id}</p>
+                        <p><strong>Players:</strong> ${data.team.player1_name} & ${data.team.player2_name}</p>
+                        <p class="mb-0"><strong>Status:</strong> Playing Now</p>
+                    </div>
+                `;
+                
+                // Play success sound
+                playNotificationSound();
+                
+                // Auto-restart scanning after 3 seconds
+                setTimeout(() => {
+                    document.getElementById('validation-result').innerHTML = '';
+                    startScanning();
+                }, 3000);
+                
+            } else {
+                document.getElementById('validation-result').innerHTML = `
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-times-circle"></i> Validation Failed</h5>
+                        <p class="mb-0">${data.message}</p>
+                    </div>
+                `;
+                
+                // Auto-restart scanning after 2 seconds
+                setTimeout(() => {
+                    document.getElementById('validation-result').innerHTML = '';
+                    startScanning();
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('validation-result').innerHTML = `
+                <div class="alert alert-danger">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Error</h5>
+                    <p class="mb-0">Failed to validate QR code. Please try again.</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                document.getElementById('validation-result').innerHTML = '';
+                startScanning();
+            }, 2000);
+        });
+    }
+    
+    function onScanFailure(error) {
+        // Handle scan failure silently
+        console.warn(`QR Code scan error: ${error}`);
+    }
+    
+    function playNotificationSound() {
+        // Create a simple beep sound
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    }
+    
+    // Auto-start scanning on page load
+    window.addEventListener('load', () => {
+        setTimeout(startScanning, 1000);
+    });
+</script>
+{% endblock %}

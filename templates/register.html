@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Register Team - Team Registration System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-user-plus"></i> Register New Team</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('register_team') }}">
+                    <div class="mb-3">
+                        <label for="player1_name" class="form-label">Player 1 Name *</label>
+                        <input type="text" class="form-control" id="player1_name" name="player1_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="player2_name" class="form-label">Player 2 Name *</label>
+                        <input type="text" class="form-control" id="player2_name" name="player2_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email Address (Optional)</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               placeholder="Enter email to receive QR code">
+                        <div class="form-text">QR code will be sent to this email if provided</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="payment_amount" class="form-label">Registration Fee Amount</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" class="form-control" id="payment_amount" name="payment_amount" 
+                                   step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        <div class="form-text">Enter the registration fee amount</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">Payment Method</label>
+                        <select class="form-select" id="payment_method" name="payment_method">
+                            <option value="">Select Payment Method</option>
+                            <option value="Cash">💵 Cash</option>
+                            <option value="UPI">📱 UPI</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="payment_status" class="form-label">Payment Status</label>
+                        <select class="form-select" id="payment_status" name="payment_status">
+                            <option value="Pending">Pending</option>
+                            <option value="Paid">Paid</option>
+                            <option value="Partial">Partial</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus"></i> Register Team & Generate QR
+                        </button>
+                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Home
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-4 text-center">
+            <small class="text-muted">
+                <i class="fas fa-info-circle"></i> 
+                After registration, you'll receive a unique QR code for team validation
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

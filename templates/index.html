@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="text-center mb-5">
+            <h1 class="display-4"><i class="fas fa-qrcode text-primary"></i> Team Registration System</h1>
+            <p class="lead">Complete QR-based team registration and monitoring solution</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h5 class="card-title">Register Team</h5>
+                        <p class="card-text">Register new teams and generate QR codes for validation</p>
+                        <a href="{{ url_for('register_page') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Register Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-qrcode fa-3x text-success mb-3"></i>
+                        <h5 class="card-title">Validate QR Code</h5>
+                        <p class="card-text">Scan team QR codes for match validation (Mobile-friendly)</p>
+                        <a href="/validate" class="btn btn-success">
+                            <i class="fas fa-camera"></i> Scan QR
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-tv fa-3x text-info mb-3"></i>
+                        <h5 class="card-title">Live Monitor</h5>
+                        <p class="card-text">Real-time dashboard showing team status and match progress</p>
+                        <a href="/monitor" class="btn btn-info">
+                            <i class="fas fa-eye"></i> View Monitor
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-cog fa-3x text-warning mb-3"></i>
+                        <h5 class="card-title">Admin Panel</h5>
+                        <p class="card-text">Manage teams, update status, and view all registrations</p>
+                        <a href="/admin" class="btn btn-warning">
+                            <i class="fas fa-tools"></i> Admin Access
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-5 text-center">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="text-primary" id="total-teams">0</h5>
+                            <small>Total Teams</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="text-success" id="validated-teams">0</h5>
+                            <small>Validated</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="text-warning" id="playing-teams">0</h5>
+                            <small>Playing</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="text-secondary" id="completed-teams">0</h5>
+                            <small>Completed</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const socket = io();
+    
+    // Update stats on page load
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => updateStats(data));
+    
+    // Listen for real-time updates
+    socket.on('stats_update', function(data) {
+        updateStats(data);
+    });
+    
+    function updateStats(stats) {
+        document.getElementById('total-teams').textContent = stats.total || 0;
+        document.getElementById('validated-teams').textContent = stats.validated || 0;
+        document.getElementById('playing-teams').textContent = stats.playing || 0;
+        document.getElementById('completed-teams').textContent = stats.completed || 0;
+    }
+</script>
+{% endblock %}

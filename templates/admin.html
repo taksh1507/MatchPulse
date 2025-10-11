@@ -1,0 +1,540 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Panel - Team Registration System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-cog text-warning"></i> Admin Panel</h2>
+            <div>
+                <button class="btn btn-success" onclick="refreshData()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+                <a href="{{ url_for('register_page') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Team
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics Overview -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h3>{{ teams|length }}</h3>
+                        <p class="mb-0">Total Teams</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h3>{{ teams|selectattr('validation_status', 'equalto', 'Validated')|list|length }}</h3>
+                        <p class="mb-0">Validated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h3>{{ teams|selectattr('match_status', 'equalto', 'Playing')|list|length }}</h3>
+                        <p class="mb-0">Playing</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <h3>{{ teams|selectattr('match_status', 'equalto', 'Completed')|list|length }}</h3>
+                        <p class="mb-0">Completed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Teams Management Table -->
+        <div class="card">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0"><i class="fas fa-users"></i> Teams Management</h4>
+            </div>
+            <div class="card-body">
+                {% if teams %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Team ID</th>
+                                <th>Players</th>
+                                <th>Email</th>
+                                <th>Payment</th>
+                                <th>Validation</th>
+                                <th>Match Status</th>
+                                <th>Registered</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for team in teams %}
+                            <tr id="team-row-{{ team.team_id }}">
+                                <td>
+                                    <strong>{{ team.team_id }}</strong>
+                                    {% if team.qr_code_path %}
+                                    <br>
+                                    <a href="{{ url_for('static', filename=team.qr_code_path.replace('static/', '')) }}"
+                                        target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-qrcode"></i> QR
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ team.player1_name }}</strong><br>
+                                    <strong>{{ team.player2_name }}</strong>
+                                </td>
+                                <td>
+                                    {% if team.email %}
+                                    <small class="text-muted">{{ team.email }}</small>
+                                    {% else %}
+                                    <small class="text-muted">No email</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-{{ 'success' if team.payment_status == 'Paid' else 'warning' }}">
+                                        {{ team.payment_status }}
+                                    </span>
+                                    {% if team.payment_amount %}
+                                    <br><small class="text-muted">₹{{ "%.2f"|format(team.payment_amount) }}</small>
+                                    {% endif %}
+                                    {% if team.payment_method %}
+                                    <br><small class="text-info">{{ team.payment_method }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span
+                                        class="badge bg-{{ 'success' if team.validation_status == 'Validated' else 'secondary' }}">
+                                        {{ team.validation_status }}
+                                    </span>
+                                    {% if team.validated_at %}
+                                    <br>
+                                    <small class="text-muted">
+                                        {{ team.validated_at.strftime('%m/%d %H:%M') }}
+                                    </small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm"
+                                        onchange="updateTeamStatus('{{ team.team_id }}', this.value)">
+                                        <option value="Waiting" {{ 'selected' if team.match_status=='Waiting' else ''
+                                            }}>
+                                            Waiting
+                                        </option>
+                                        <option value="Playing" {{ 'selected' if team.match_status=='Playing' else ''
+                                            }}>
+                                            Playing
+                                        </option>
+                                        <option value="Completed" {{ 'selected' if team.match_status=='Completed'
+                                            else '' }}>
+                                            Completed
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <small>{{ team.created_at.strftime('%m/%d/%Y %H:%M') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if team.qr_code_path %}
+                                        <a href="{{ url_for('static', filename=team.qr_code_path.replace('static/', '')) }}"
+                                            download="team_{{ team.team_id }}_qr.png" class="btn btn-outline-primary"
+                                            title="Download QR">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        {% endif %}
+                                        <button class="btn btn-outline-info"
+                                            onclick="viewTeamDetails('{{ team.team_id }}')" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if team.email %}
+                                        <button class="btn btn-outline-success"
+                                            onclick="resendEmail('{{ team.team_id }}')" title="Resend QR Email">
+                                            <i class="fas fa-envelope"></i>
+                                        </button>
+                                        {% endif %}
+                                        <button class="btn btn-outline-danger"
+                                            onclick="deleteTeam('{{ team.team_id }}')" title="Delete Team">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No teams registered yet</h5>
+                    <a href="{{ url_for('register_page') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Register First Team
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-bolt"></i> Quick Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-success" onclick="markAllValidated()">
+                                <i class="fas fa-check-double"></i> Mark All as Validated
+                            </button>
+                            <button class="btn btn-warning" onclick="resetAllToWaiting()">
+                                <i class="fas fa-undo"></i> Reset All to Waiting
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteAllTeams()">
+                                <i class="fas fa-trash-alt"></i> Delete All Teams
+                            </button>
+                            <button class="btn btn-info" onclick="exportData()">
+                                <i class="fas fa-file-excel"></i> Export to Excel
+                            </button>
+                            <button class="btn btn-success" onclick="exportDetailedData()">
+                                <i class="fas fa-chart-bar"></i> Export with Stats
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-chart-bar"></i> System Status</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <div class="border-end">
+                                    <h4 class="text-success" id="system-uptime">Online</h4>
+                                    <small>System Status</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <h4 class="text-info" id="last-update">Just now</h4>
+                                <small>Last Update</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Team Details Modal -->
+<div class="modal fade" id="teamDetailsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Team Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="teamDetailsContent">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const socket = io();
+
+    // Socket event listeners
+    socket.on('team_registered', function (data) {
+        showNotification(`New team registered: ${data.player1_name} & ${data.player2_name}`, 'success');
+        setTimeout(refreshData, 1000);
+    });
+
+    socket.on('team_validated', function (data) {
+        showNotification(`Team validated: ${data.player1_name} & ${data.player2_name}`, 'success');
+        setTimeout(refreshData, 1000);
+    });
+
+    socket.on('status_updated', function (data) {
+        updateRowStatus(data.team_id, data.status);
+    });
+
+    socket.on('team_deleted', function (data) {
+        showNotification(`Team deleted: ${data.player1_name} & ${data.player2_name}`, 'warning');
+        setTimeout(refreshData, 1000);
+    });
+
+    socket.on('all_teams_deleted', function (data) {
+        showNotification(`All teams deleted: ${data.count} teams removed`, 'warning');
+        setTimeout(refreshData, 1000);
+    });
+
+    socket.on('team_completed', function (data) {
+        showNotification(`Match completed: ${data.player1_name} & ${data.player2_name}`, 'info');
+        setTimeout(refreshData, 1000);
+    });
+
+    socket.on('admin_notification', function (data) {
+        // Special admin notifications with enhanced styling
+        const alertClass = data.priority === 'high' ? 'alert-warning' : 'alert-info';
+        const iconClass = data.type === 'team_completed' ? 'fas fa-trophy' : 'fas fa-bell';
+
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 350px; border-left: 5px solid #ffc107;';
+        notification.innerHTML = `
+            <div class="d-flex align-items-center">
+                <i class="${iconClass} fa-2x text-warning me-3"></i>
+                <div>
+                    <h6 class="mb-1"><strong>${data.title}</strong></h6>
+                    <p class="mb-0">${data.message}</p>
+                    <small class="text-muted">${new Date(data.timestamp).toLocaleTimeString()}</small>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Play notification sound
+        try {
+            const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+            audio.play().catch(e => console.log('Could not play notification sound'));
+        } catch (e) {
+            console.log('Audio not supported');
+        }
+
+        // Auto-remove after 8 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 8000);
+    });
+
+    function updateTeamStatus(teamId, newStatus) {
+        fetch('/admin/update_status', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                team_id: teamId,
+                status: newStatus
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`Team ${teamId} status updated to ${newStatus}`, 'success');
+                    updateRowStatus(teamId, newStatus);
+                } else {
+                    showNotification('Failed to update team status', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error updating team status', 'error');
+            });
+    }
+
+    function updateRowStatus(teamId, status) {
+        const row = document.getElementById(`team-row-${teamId}`);
+        if (row) {
+            const select = row.querySelector('select');
+            if (select) {
+                select.value = status;
+            }
+        }
+    }
+
+    function viewTeamDetails(teamId) {
+        fetch(`/api/teams`)
+            .then(response => response.json())
+            .then(teams => {
+                const team = teams.find(t => t.team_id === teamId);
+                if (team) {
+                    const content = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Team Information</h6>
+                                <p><strong>Team ID:</strong> ${team.team_id}</p>
+                                <p><strong>Player 1:</strong> ${team.player1_name}</p>
+                                <p><strong>Player 2:</strong> ${team.player2_name}</p>
+                                <p><strong>Payment Status:</strong> 
+                                    <span class="badge bg-${team.payment_status === 'Paid' ? 'success' : 'warning'}">
+                                        ${team.payment_status}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Status Information</h6>
+                                <p><strong>Validation:</strong> 
+                                    <span class="badge bg-${team.validation_status === 'Validated' ? 'success' : 'secondary'}">
+                                        ${team.validation_status}
+                                    </span>
+                                </p>
+                                <p><strong>Match Status:</strong> 
+                                    <span class="badge bg-info">${team.match_status}</span>
+                                </p>
+                                <p><strong>Registered:</strong> ${new Date(team.created_at).toLocaleString()}</p>
+                                ${team.validated_at ? `<p><strong>Validated:</strong> ${new Date(team.validated_at).toLocaleString()}</p>` : ''}
+                            </div>
+                        </div>
+                        ${team.qr_code_path ? `
+                            <div class="text-center mt-3">
+                                <h6>QR Code</h6>
+                                <img src="${team.qr_code_path}" alt="QR Code" class="img-fluid" style="max-width: 200px;">
+                            </div>
+                        ` : ''}
+                    `;
+
+                    document.getElementById('teamDetailsContent').innerHTML = content;
+                    new bootstrap.Modal(document.getElementById('teamDetailsModal')).show();
+                }
+            });
+    }
+
+    function refreshData() {
+        location.reload();
+    }
+
+    function markAllValidated() {
+        if (confirm('Mark all teams as validated? This action cannot be undone.')) {
+            // Implementation would go here
+            showNotification('Feature coming soon!', 'info');
+        }
+    }
+
+    function resetAllToWaiting() {
+        if (confirm('Reset all teams to waiting status? This action cannot be undone.')) {
+            // Implementation would go here
+            showNotification('Feature coming soon!', 'info');
+        }
+    }
+
+    function exportData() {
+        window.open('/admin/export', '_blank');
+    }
+
+    function exportDetailedData() {
+        window.open('/admin/export_stats', '_blank');
+    }
+
+    function resendEmail(teamId) {
+        if (confirm('Resend QR code email for this team?')) {
+            fetch('/admin/resend_email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ team_id: teamId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Email sent successfully!', 'success');
+                    } else {
+                        showNotification('Failed to send email: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Error sending email', 'error');
+                });
+        }
+    }
+
+    function deleteTeam(teamId) {
+        if (confirm('Are you sure you want to delete this team? This action cannot be undone.')) {
+            fetch('/admin/delete_team', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ team_id: teamId })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('Team deleted successfully!', 'success');
+                        setTimeout(refreshData, 1000);
+                    } else {
+                        showNotification('Failed to delete team: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    showNotification('Error deleting team', 'error');
+                });
+        }
+    }
+
+    function deleteAllTeams() {
+        if (confirm('Are you sure you want to delete ALL teams? This action cannot be undone.')) {
+            if (confirm('This will permanently delete all team registrations. Type "DELETE ALL" to confirm:')) {
+                const confirmation = prompt('Type "DELETE ALL" to confirm:');
+                if (confirmation === 'DELETE ALL') {
+                    fetch('/admin/delete_all_teams', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showNotification('All teams deleted successfully!', 'success');
+                                setTimeout(refreshData, 1000);
+                            } else {
+                                showNotification('Failed to delete teams: ' + data.message, 'error');
+                            }
+                        })
+                        .catch(error => {
+                            showNotification('Error deleting teams', 'error');
+                        });
+                } else {
+                    showNotification('Deletion cancelled - confirmation text did not match', 'info');
+                }
+            }
+        }
+    }
+
+    function showNotification(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' :
+            type === 'error' ? 'alert-danger' : 'alert-info';
+
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
+    }
+
+    // Update last update time
+    setInterval(() => {
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+    }, 1000);
+</script>
+{% endblock %}

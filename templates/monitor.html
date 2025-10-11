@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+
+{% block title %}Live Monitor - Team Registration System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-tv text-info"></i> Live Monitor Dashboard</h2>
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-outline-secondary btn-sm" onclick="createTestPlayingTeam()" title="Create test playing team">
+                    <i class="fas fa-plus"></i> Test Team
+                </button>
+                <div class="badge bg-success fs-6" id="live-indicator">
+                    <i class="fas fa-circle"></i> LIVE
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body text-center">
+                        <h2 id="total-teams">0</h2>
+                        <p class="mb-0">Total Teams</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body text-center">
+                        <h2 id="validated-teams">0</h2>
+                        <p class="mb-0">Validated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body text-center">
+                        <h2 id="playing-teams">0</h2>
+                        <p class="mb-0">Currently Playing</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-secondary text-white">
+                    <div class="card-body text-center">
+                        <h2 id="completed-teams">0</h2>
+                        <p class="mb-0">Completed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Currently Playing Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0"><i class="fas fa-play"></i> Currently Playing</h4>
+                <small>Click "Complete" when match finishes</small>
+            </div>
+            <div class="card-body" id="currently-playing">
+                <p class="text-muted text-center">No teams currently playing</p>
+            </div>
+        </div>
+        
+        <!-- Coming for Match Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-users"></i> Coming for Match (Validated Teams)</h4>
+            </div>
+            <div class="card-body" id="validated-teams-list">
+                <p class="text-muted text-center">No validated teams yet</p>
+            </div>
+        </div>
+        
+        <!-- Completed Matches Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h4 class="mb-0"><i class="fas fa-trophy"></i> Completed Matches</h4>
+            </div>
+            <div class="card-body" id="completed-teams-list">
+                <p class="text-muted text-center">No completed matches yet</p>
+            </div>
+        </div>
+        
+        <!-- All Teams Section -->
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-list"></i> All Registered Teams</h4>
+            </div>
+            <div class="card-body" id="all-teams-list">
+                <p class="text-muted text-center">Loading teams...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Audio for notifications -->
+<audio id="notification-sound" preload="auto">
+    <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT" type="audio/wav">
+</audio>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const socket = io();
+    let notificationSound = document.getElementById('notification-sound');
+    
+    // Load initial data
+    loadTeams();
+    loadStats();
+    
+    // Set up auto-refresh
+    setInterval(loadTeams, 30000); // Refresh every 30 seconds
+    setInterval(loadStats, 10000);  // Refresh stats every 10 seconds
+    
+    // Socket event listeners
+    socket.on('team_registered', function(data) {
+        showNotification(`New team registered: ${data.player1_name} & ${data.player2_name}`, 'info');
+        loadTeams();
+        loadStats();
+    });
+    
+    socket.on('team_validated', function(data) {
+        showNotification(`Team validated: ${data.player1_name} & ${data.player2_name} - Now Playing!`, 'success');
+        playNotificationSound();
+        loadTeams();
+        loadStats();
+        
+        // Highlight the validated team
+        setTimeout(() => {
+            highlightTeam(data.team_id);
+        }, 1000);
+    });
+    
+    socket.on('team_deleted', function(data) {
+        showNotification(`Team deleted: ${data.player1_name} & ${data.player2_name}`, 'warning');
+        loadTeams();
+        loadStats();
+    });
+    
+    socket.on('all_teams_deleted', function(data) {
+        showNotification(`All teams deleted: ${data.count} teams removed`, 'warning');
+        loadTeams();
+        loadStats();
+    });
+    
+    socket.on('team_completed', function(data) {
+        showNotification(`🏆 Match completed: ${data.player1_name} & ${data.player2_name}`, 'success');
+        playNotificationSound();
+        loadTeams();
+        loadStats();
+    });
+    
+    socket.on('status_updated', function(data) {
+        showNotification(`Team ${data.team_id} status updated to: ${data.status}`, 'warning');
+        loadTeams();
+        loadStats();
+    });
+    
+    function loadTeams() {
+        fetch('/api/teams')
+            .then(response => response.json())
+            .then(teams => {
+                displayCurrentlyPlaying(teams);
+                displayValidatedTeams(teams);
+                displayCompletedTeams(teams);
+                displayAllTeams(teams);
+            })
+            .catch(error => console.error('Error loading teams:', error));
+    }
+    
+    function loadStats() {
+        fetch('/api/stats')
+            .then(response => response.json())
+            .then(stats => {
+                document.getElementById('total-teams').textContent = stats.total || 0;
+                document.getElementById('validated-teams').textContent = stats.validated || 0;
+                document.getElementById('playing-teams').textContent = stats.playing || 0;
+                document.getElementById('completed-teams').textContent = stats.completed || 0;
+            })
+            .catch(error => console.error('Error loading stats:', error));
+    }
+    
+    function displayCurrentlyPlaying(teams) {
+        const playingTeams = teams.filter(team => team.match_status === 'Playing');
+        const container = document.getElementById('currently-playing');
+        
+        if (playingTeams.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No teams currently playing</p>';
+            return;
+        }
+        
+        let html = '';
+        playingTeams.forEach(team => {
+            html += `
+                <div class="alert alert-warning mb-2" id="playing-team-${team.team_id}">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h5 class="mb-1">
+                                <i class="fas fa-play text-warning"></i> 
+                                Team ${team.team_id}
+                            </h5>
+                            <p class="mb-0">
+                                <strong>${team.player1_name}</strong> & <strong>${team.player2_name}</strong>
+                            </p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <span class="badge bg-warning fs-6">PLAYING NOW</span>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <button class="btn btn-success btn-sm" onclick="markAsCompleted('${team.team_id}', '${team.player1_name}', '${team.player2_name}')" title="Mark as Completed">
+                                <i class="fas fa-check"></i> Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    function displayValidatedTeams(teams) {
+        const validatedTeams = teams.filter(team => 
+            team.validation_status === 'Validated' && team.match_status === 'Waiting'
+        );
+        const container = document.getElementById('validated-teams-list');
+        
+        if (validatedTeams.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No validated teams waiting</p>';
+            return;
+        }
+        
+        let html = '';
+        validatedTeams.forEach(team => {
+            html += `
+                <div class="alert alert-success mb-2" id="team-${team.team_id}">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">
+                                <i class="fas fa-check-circle text-success"></i> 
+                                Team ${team.team_id}
+                            </h5>
+                            <p class="mb-0">
+                                <strong>${team.player1_name}</strong> & <strong>${team.player2_name}</strong>
+                            </p>
+                            <small class="text-muted">
+                                Validated: ${new Date(team.validated_at).toLocaleString()}
+                            </small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-success fs-6">READY TO PLAY</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    function displayCompletedTeams(teams) {
+        const completedTeams = teams.filter(team => team.match_status === 'Completed');
+        const container = document.getElementById('completed-teams-list');
+        
+        if (completedTeams.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No completed matches yet</p>';
+            return;
+        }
+        
+        // Sort by most recently completed (assuming validated_at or created_at as proxy)
+        completedTeams.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        let html = '';
+        completedTeams.slice(0, 5).forEach(team => { // Show only last 5 completed
+            html += `
+                <div class="alert alert-secondary mb-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">
+                                <i class="fas fa-trophy text-secondary"></i> 
+                                Team ${team.team_id}
+                            </h5>
+                            <p class="mb-0">
+                                <strong>${team.player1_name}</strong> & <strong>${team.player2_name}</strong>
+                            </p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <span class="badge bg-secondary fs-6">COMPLETED</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        if (completedTeams.length > 5) {
+            html += `<p class="text-muted text-center mt-2">... and ${completedTeams.length - 5} more completed matches</p>`;
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    function displayAllTeams(teams) {
+        const container = document.getElementById('all-teams-list');
+        
+        if (teams.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No teams registered yet</p>';
+            return;
+        }
+        
+        let html = '<div class="row">';
+        teams.forEach(team => {
+            const statusClass = getStatusClass(team.match_status);
+            const validationBadge = team.validation_status === 'Validated' 
+                ? '<span class="badge bg-success">Validated</span>' 
+                : '<span class="badge bg-secondary">Not Validated</span>';
+            
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card ${statusClass}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="card-title">Team ${team.team_id}</h6>
+                                    <p class="card-text mb-1">
+                                        <strong>${team.player1_name}</strong> & <strong>${team.player2_name}</strong>
+                                    </p>
+                                    <small class="text-muted">
+                                        Registered: ${new Date(team.created_at).toLocaleString()}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    ${validationBadge}
+                                    <br>
+                                    <span class="badge bg-info mt-1">${team.match_status}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+    }
+    
+    function getStatusClass(status) {
+        switch(status) {
+            case 'Playing': return 'status-playing';
+            case 'Completed': return 'status-completed';
+            default: return 'status-waiting';
+        }
+    }
+    
+    function highlightTeam(teamId) {
+        const teamElement = document.getElementById(`team-${teamId}`);
+        if (teamElement) {
+            teamElement.style.animation = 'pulse 2s infinite';
+            setTimeout(() => {
+                teamElement.style.animation = '';
+            }, 6000);
+        }
+    }
+    
+    function showNotification(message, type) {
+        const alertClass = type === 'success' ? 'alert-success' : 
+                          type === 'warning' ? 'alert-warning' : 'alert-info';
+        
+        const notification = document.createElement('div');
+        notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+        notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        notification.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.parentNode.removeChild(notification);
+            }
+        }, 5000);
+    }
+    
+    function playNotificationSound() {
+        try {
+            notificationSound.play().catch(e => console.log('Could not play sound:', e));
+        } catch (e) {
+            console.log('Sound not supported');
+        }
+    }
+    
+    function markAsCompleted(teamId, player1Name, player2Name) {
+        if (confirm(`Mark Team ${teamId} (${player1Name} & ${player2Name}) as COMPLETED?`)) {
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Completing...';
+            button.disabled = true;
+            
+            fetch('/monitor/complete_team', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ team_id: teamId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`Team ${teamId} marked as COMPLETED! Admin has been notified.`, 'success');
+                    playNotificationSound();
+                    
+                    // Remove from currently playing section with animation
+                    const teamElement = document.getElementById(`playing-team-${teamId}`);
+                    if (teamElement) {
+                        teamElement.style.transition = 'all 0.5s ease-out';
+                        teamElement.style.transform = 'scale(0.8)';
+                        teamElement.style.opacity = '0';
+                        setTimeout(() => {
+                            loadTeams();
+                            loadStats();
+                        }, 500);
+                    }
+                } else {
+                    showNotification(`Failed to complete team: ${data.message}`, 'error');
+                    // Restore button
+                    button.innerHTML = originalContent;
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error completing team', 'error');
+                // Restore button
+                button.innerHTML = originalContent;
+                button.disabled = false;
+            });
+        }
+    }
+    
+    function createTestPlayingTeam() {
+        if (confirm('Create a test team in Playing status for testing completion?')) {
+            fetch('/test/create_playing_team', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification(`Test playing team created: ${data.team_id}`, 'success');
+                    loadTeams();
+                    loadStats();
+                } else {
+                    showNotification(`Failed to create test team: ${data.message}`, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error creating test team', 'error');
+            });
+        }
+    }
+    
+    // Add pulse animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

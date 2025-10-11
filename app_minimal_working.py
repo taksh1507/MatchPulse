@@ -128,7 +128,15 @@ try:
     print(f"✅ Database type: {'PostgreSQL' if USE_POSTGRES else 'SQLite'}", flush=True)
 
     # Encryption key
-    ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', Fernet.generate_key())
+    ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY')
+    if not ENCRYPTION_KEY:
+        ENCRYPTION_KEY = Fernet.generate_key()
+        print("⚠️ Generated new encryption key - QR codes from previous sessions won't work")
+    else:
+        # Ensure it's bytes for Fernet
+        if isinstance(ENCRYPTION_KEY, str):
+            ENCRYPTION_KEY = ENCRYPTION_KEY.encode()
+    
     cipher_suite = Fernet(ENCRYPTION_KEY)
     print("✅ Encryption configured", flush=True)
 
@@ -511,6 +519,7 @@ Team Registration System
     def register_team():
         """Handle team registration"""
         try:
+            print("🔄 Processing team registration...", flush=True)
             player1_name = request.form.get('player1_name')
             player2_name = request.form.get('player2_name')
             email = request.form.get('email', '').strip()
@@ -533,10 +542,13 @@ Team Registration System
             
             # Generate unique team ID
             team_id = str(uuid.uuid4())[:8].upper()
+            print(f"🔄 Generated team ID: {team_id}", flush=True)
             
             # Generate QR code
+            print(f"🔄 Generating QR code for team {team_id}...", flush=True)
             qr_data = generate_qr_data(team_id)
             qr_path = generate_qr_code(team_id, qr_data)
+            print(f"✅ QR code generated: {qr_path}", flush=True)
             
             # Store in database
             execute_query('''
@@ -587,6 +599,9 @@ Team Registration System
             return response
             
         except Exception as e:
+            print(f"❌ Registration error: {str(e)}", flush=True)
+            import traceback
+            traceback.print_exc()
             flash(f'Registration failed: {str(e)}', 'error')
             return redirect(url_for('register_page'))
 

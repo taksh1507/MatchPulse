@@ -116,6 +116,12 @@ try:
         """Set data in cache with timestamp"""
         cache[cache_key]['data'] = data
         cache[cache_key]['timestamp'] = time.time()
+    
+    def invalidate_cache():
+        """Clear all cached data when data changes"""
+        for key in cache:
+            cache[key]['data'] = None
+            cache[key]['timestamp'] = 0
 
     # Database configuration
     USE_POSTGRES = DATABASE_URL.startswith('postgresql://') and POSTGRES_AVAILABLE
@@ -496,8 +502,10 @@ Team Registration System
 
     @app.route('/register')
     def register_page():
-        """Team registration page"""
-        return render_template('register.html')
+        """Team registration page - optimized"""
+        response = app.make_response(render_template('register.html'))
+        response.headers['Cache-Control'] = 'public, max-age=300'  # 5 minutes
+        return response
 
     @app.route('/register', methods=['POST'])
     def register_team():
@@ -538,6 +546,9 @@ Team Registration System
             ''', (team_id, player1_name, player2_name, email or None, payment_status, 
                   payment_amount_float, payment_method or None, qr_path))
             
+            # Invalidate cache after data change
+            invalidate_cache()
+            
             # Update Excel backup
             update_excel_backup(team_id, player1_name, player2_name, payment_status, qr_path, 
                               email=email, payment_amount=payment_amount_float, payment_method=payment_method)
@@ -562,7 +573,7 @@ Team Registration System
                 'email_sent': email_sent
             })
             
-            return render_template('registration_success.html', 
+            response = app.make_response(render_template('registration_success.html', 
                                  team_id=team_id, 
                                  qr_path=qr_path,
                                  player1_name=player1_name,
@@ -571,7 +582,9 @@ Team Registration System
                                  email_sent=email_sent,
                                  payment_amount=payment_amount_float,
                                  payment_method=payment_method,
-                                 payment_status=payment_status)
+                                 payment_status=payment_status))
+            response.headers['Cache-Control'] = 'private, no-cache'  # Don't cache success pages
+            return response
             
         except Exception as e:
             flash(f'Registration failed: {str(e)}', 'error')
@@ -579,8 +592,10 @@ Team Registration System
 
     @app.route('/validate')
     def validate_page():
-        """QR code validation page"""
-        return render_template('validate.html')
+        """QR code validation page - optimized"""
+        response = app.make_response(render_template('validate.html'))
+        response.headers['Cache-Control'] = 'public, max-age=300'  # 5 minutes
+        return response
 
     @app.route('/validate', methods=['POST'])
     def validate_qr():
@@ -618,6 +633,9 @@ Team Registration System
                 WHERE team_id = %s
             ''', (team_id,))
             
+            # Invalidate cache after data change
+            invalidate_cache()
+            
             # Emit real-time update
             socketio.emit('team_validated', {
                 'team_id': team_id,
@@ -642,8 +660,10 @@ Team Registration System
 
     @app.route('/monitor')
     def monitor_dashboard():
-        """Live monitor dashboard"""
-        return render_template('monitor.html')
+        """Live monitor dashboard - optimized"""
+        response = app.make_response(render_template('monitor.html'))
+        response.headers['Cache-Control'] = 'public, max-age=60'  # 1 minute (shorter for real-time data)
+        return response
 
     @app.route('/monitor/complete_team', methods=['POST'])
     def complete_team_from_monitor():
@@ -749,9 +769,26 @@ Team Registration System
 
     @app.route('/admin')
     def admin_panel():
-        """Admin panel"""
-        teams = execute_query('SELECT * FROM teams ORDER BY created_at DESC', fetch_all=True) or []
-        return render_template('admin.html', teams=teams)
+        """Admin panel - optimized with caching and pagination"""
+        page = request.args.get('page', 1, type=int)
+        per_page = 25  # Show 25 teams per page for faster loading
+        offset = (page - 1) * per_page
+        
+        cache_key = f'admin_teams_page_{page}'
+        
+        # Try to get cached teams first
+        cached_teams = get_cached_data(cache_key)
+        if cached_teams:
+            teams = cached_teams
+        else:
+            # Get paginated teams
+            teams = execute_query(f'SELECT * FROM teams ORDER BY created_at DESC LIMIT {per_page} OFFSET {offset}', fetch_all=True) or []
+            # Cache for 30 seconds
+            cache[cache_key] = {'data': teams, 'timestamp': time.time(), 'ttl': 30}
+        
+        response = app.make_response(render_template('admin.html', teams=teams, page=page))
+        response.headers['Cache-Control'] = 'private, max-age=30'  # 30 seconds for admin data
+        return response
 
     @app.route('/admin/update_status', methods=['POST'])
     def update_team_status():
@@ -762,6 +799,9 @@ Team Registration System
             
             result = execute_query('UPDATE teams SET match_status = %s WHERE team_id = %s', 
                                   (new_status, team_id))
+            
+            # Invalidate cache after data change
+            invalidate_cache()
             
             if result:
                 # Emit real-time update

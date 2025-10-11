@@ -53,6 +53,59 @@
             </div>
         </div>
 
+        <!-- Payment Statistics -->
+        {% if payment_stats %}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Payment Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="card bg-success text-white">
+                                    <div class="card-body text-center">
+                                        <h4>💵 {{ payment_stats.cash_count }}</h4>
+                                        <p class="mb-0">Cash Teams</p>
+                                        <small>₹{{ "%.2f"|format(payment_stats.cash_revenue) }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h4>📱 {{ payment_stats.upi_count }}</h4>
+                                        <p class="mb-0">UPI Teams</p>
+                                        <small>₹{{ "%.2f"|format(payment_stats.upi_revenue) }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <h4>💰 {{ payment_stats.cash_count + payment_stats.upi_count }}</h4>
+                                        <p class="mb-0">Total Paid</p>
+                                        <small>₹{{ "%.2f"|format(payment_stats.total_revenue) }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card bg-dark text-white">
+                                    <div class="card-body text-center">
+                                        <h4>📊 {{ "%.1f"|format((payment_stats.cash_revenue / payment_stats.total_revenue * 100) if payment_stats.total_revenue > 0 else 0) }}%</h4>
+                                        <p class="mb-0">Cash Ratio</p>
+                                        <small>{{ "%.1f"|format((payment_stats.upi_revenue / payment_stats.total_revenue * 100) if payment_stats.total_revenue > 0 else 0) }}% UPI</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Teams Management Table -->
         <div class="card">
             <div class="card-header bg-warning text-white">
@@ -70,6 +123,7 @@
                                 <th>Payment</th>
                                 <th>Validation</th>
                                 <th>Match Status</th>
+                                <th>Goal Time</th>
                                 <th>Registered</th>
                                 <th>Actions</th>
                             </tr>
@@ -88,8 +142,13 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                    <strong>{{ team.player1_name }}</strong><br>
+                                    <strong>{{ team.player1_name }}</strong>
+                                    {% if team.player1_pid %}<br><small class="text-muted">PID: {{ team.player1_pid }}</small>{% endif %}
+                                    {% if team.player1_phone %}<br><small class="text-info">📱 {{ team.player1_phone }}</small>{% endif %}
+                                    <br>
                                     <strong>{{ team.player2_name }}</strong>
+                                    {% if team.player2_pid %}<br><small class="text-muted">PID: {{ team.player2_pid }}</small>{% endif %}
+                                    {% if team.player2_phone %}<br><small class="text-info">📱 {{ team.player2_phone }}</small>{% endif %}
                                 </td>
                                 <td>
                                     {% if team.email %}
@@ -138,6 +197,16 @@
                                             Completed
                                         </option>
                                     </select>
+                                </td>
+                                <td>
+                                    {% if team.goal_time %}
+                                    <span class="badge bg-success">{{ "%.3f"|format(team.goal_time) }}s</span>
+                                    {% if team.goal_recorded_at %}
+                                    <br><small class="text-muted">{{ team.goal_recorded_at.strftime('%m/%d %H:%M') }}</small>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
                                 </td>
                                 <td>
                                     <small>{{ team.created_at.strftime('%m/%d/%Y %H:%M') }}</small>
@@ -207,6 +276,9 @@
                             </button>
                             <button class="btn btn-success" onclick="exportDetailedData()">
                                 <i class="fas fa-chart-bar"></i> Export with Stats
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="regeneratePasswords()">
+                                <i class="fas fa-key"></i> Regenerate Passwords
                             </button>
                         </div>
                     </div>
@@ -372,8 +444,8 @@
                             <div class="col-md-6">
                                 <h6>Team Information</h6>
                                 <p><strong>Team ID:</strong> ${team.team_id}</p>
-                                <p><strong>Player 1:</strong> ${team.player1_name}</p>
-                                <p><strong>Player 2:</strong> ${team.player2_name}</p>
+                                <p><strong>Player 1:</strong> ${team.player1_name}${team.player1_pid ? ` (PID: ${team.player1_pid})` : ''}${team.player1_phone ? ` - ${team.player1_phone}` : ''}</p>
+                                <p><strong>Player 2:</strong> ${team.player2_name}${team.player2_pid ? ` (PID: ${team.player2_pid})` : ''}${team.player2_phone ? ` - ${team.player2_phone}` : ''}</p>
                                 <p><strong>Payment Status:</strong> 
                                     <span class="badge bg-${team.payment_status === 'Paid' ? 'success' : 'warning'}">
                                         ${team.payment_status}
@@ -432,6 +504,54 @@
 
     function exportDetailedData() {
         window.open('/admin/export_stats', '_blank');
+    }
+
+    function regeneratePasswords() {
+        if (confirm('⚠️ This will generate NEW random passwords for all protected pages.\n\nCurrent passwords will be invalidated and new ones will be sent via email.\n\nContinue?')) {
+            const button = event.target;
+            const originalText = button.innerHTML;
+            
+            // Show loading state
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            button.disabled = true;
+            
+            fetch('/api/regenerate-passwords', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ New passwords generated successfully!\n\n' + data.message + '\n\nCheck your email for the new passwords.');
+                    
+                    // Show password info in console for immediate reference
+                    console.log('🔐 New Passwords Generated:', data.passwords);
+                    
+                    // Optionally show passwords in a modal or alert
+                    let passwordList = 'New Passwords:\n\n';
+                    for (const [page, password] of Object.entries(data.passwords)) {
+                        passwordList += `${page}: ${password}\n`;
+                    }
+                    
+                    if (confirm('Would you like to see the new passwords now?\n\n(They have also been sent to your email)')) {
+                        alert(passwordList);
+                    }
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ Failed to regenerate passwords. Check console for details.');
+            })
+            .finally(() => {
+                // Restore button state
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
     }
 
     function resendEmail(teamId) {

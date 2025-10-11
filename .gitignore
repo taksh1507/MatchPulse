@@ -115,3 +115,6 @@ teams_backup.xlsx
 
 # QR codes (generated files)
 static/qr_codes/*.png
+
+# Generated password file (contains sensitive data)
+page_passwords.json

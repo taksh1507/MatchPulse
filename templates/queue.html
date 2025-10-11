@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+
+{% block title %}Team Queue - MatchPulse{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Header -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div>
+                <h2 class="mb-1"><i class="fas fa-list-ol text-primary"></i> Team Queue</h2>
+                <small class="text-muted">View all registered teams and their queue positions</small>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <div class="badge bg-success" id="live-indicator">
+                    <i class="fas fa-sync fa-spin"></i> <span class="d-none d-sm-inline">Loading...</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm" onclick="refreshQueue()" title="Refresh queue">
+                    <i class="fas fa-sync"></i> <span class="d-none d-sm-inline">Refresh</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-6 col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-2">
+                        <h5 class="card-title mb-1" id="total-teams">0</h5>
+                        <small class="text-muted">Total Teams</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-2">
+                        <h5 class="card-title mb-1" id="waiting-teams">0</h5>
+                        <small class="text-muted">Waiting</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-2">
+                        <h5 class="card-title mb-1" id="playing-teams">0</h5>
+                        <small class="text-muted">Playing</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card text-center">
+                    <div class="card-body py-2">
+                        <h5 class="card-title mb-1" id="completed-teams">0</h5>
+                        <small class="text-muted">Completed</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Currently Playing Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">
+                <h5 class="mb-0"><i class="fas fa-play"></i> Currently Playing</h5>
+            </div>
+            <div class="card-body" id="currently-playing">
+                <p class="text-muted text-center">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Next Two Teams Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Next Two Teams</h5>
+                    <small class="opacity-75">Ready to play when current match ends</small>
+                </div>
+            </div>
+            <div class="card-body" id="next-up">
+                <p class="text-muted text-center">Loading...</p>
+            </div>
+        </div>
+
+        <!-- Team Queue by Groups -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-users"></i> All Teams by Queue Order</h5>
+            </div>
+            <div class="card-body" id="team-queue">
+                <p class="text-muted text-center">Loading team queue...</p>
+            </div>
+        </div>
+
+        <!-- Recent Completions -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-trophy"></i> Recently Completed</h5>
+            </div>
+            <div class="card-body" id="completed-matches">
+                <p class="text-muted text-center">Loading completed matches...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    /* Mobile-specific styles */
+    @media (max-width: 768px) {
+        .card-header h5 {
+            font-size: 1.1rem;
+        }
+        
+        .table-responsive {
+            font-size: 0.85rem;
+        }
+        
+        .badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+        }
+    }
+    
+    /* Touch-friendly buttons */
+    .btn-sm {
+        min-height: 38px;
+        padding: 8px 12px;
+    }
+    
+    /* Responsive table improvements */
+    @media (max-width: 576px) {
+        .table th, .table td {
+            padding: 6px 4px;
+            font-size: 0.8rem;
+        }
+        
+        .table th:nth-child(n+4), 
+        .table td:nth-child(n+4) {
+            display: none;
+        }
+    }
+    
+    /* Status indicators */
+    .status-playing {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.7; }
+        100% { opacity: 1; }
+    }
+    
+    /* VS indicator styling */
+    .vs-indicator {
+        position: relative;
+        margin: 10px 0;
+    }
+    
+    .vs-indicator::before,
+    .vs-indicator::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 30%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #0d6efd, transparent);
+    }
+    
+    .vs-indicator::before {
+        left: 0;
+    }
+    
+    .vs-indicator::after {
+        right: 0;
+    }
+    
+    /* Next match cards */
+    .card.border-success {
+        box-shadow: 0 4px 8px rgba(25, 135, 84, 0.2);
+        transition: transform 0.2s ease;
+    }
+    
+    .card.border-success:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(25, 135, 84, 0.3);
+    }
+</style>
+
+<script>
+    // Auto-refresh every 15 seconds
+    let refreshInterval;
+    
+    // Load initial data
+    loadQueueData();
+    
+    // Set up auto-refresh
+    refreshInterval = setInterval(loadQueueData, 15000);
+    
+    function loadQueueData() {
+        console.log('Loading queue data...');
+        updateLiveIndicator('loading');
+        
+        // Load all data
+        Promise.all([
+            fetch('/api/teams').then(r => r.json()),
+            fetch('/api/queue').then(r => r.json()),
+            fetch('/api/stats').then(r => r.json())
+        ])
+        .then(([teams, groups, stats]) => {
+            console.log('Queue data loaded:', { teams: teams.length, groups: groups.length, stats });
+            
+            // Update stats
+            updateStats(stats);
+            
+            // Update displays
+            displayCurrentlyPlaying(teams);
+            displayNextUp(teams);
+            displayTeamQueue(groups);
+            displayRecentCompletions(teams);
+            
+            updateLiveIndicator('success');
+        })
+        .catch(error => {
+            console.error('Error loading queue data:', error);
+            updateLiveIndicator('error');
+        });
+    }
+    
+    function updateStats(stats) {
+        document.getElementById('total-teams').textContent = stats.total || 0;
+        const waitingCount = (stats.total - stats.playing - stats.completed) || 0;
+        document.getElementById('waiting-teams').textContent = waitingCount;
+        document.getElementById('playing-teams').textContent = stats.playing || 0;
+        document.getElementById('completed-teams').textContent = stats.completed || 0;
+        
+        // Update waiting teams card color based on readiness for next match
+        const waitingCard = document.getElementById('waiting-teams').closest('.card');
+        if (waitingCount >= 2) {
+            waitingCard.classList.add('border-success');
+            waitingCard.classList.remove('border-warning');
+        } else if (waitingCount === 1) {
+            waitingCard.classList.add('border-warning');
+            waitingCard.classList.remove('border-success');
+        } else {
+            waitingCard.classList.remove('border-success', 'border-warning');
+        }
+    }
+    
+    function displayCurrentlyPlaying(teams) {
+        const container = document.getElementById('currently-playing');
+        const playingTeams = teams.filter(team => team.status === 'playing');
+        
+        if (playingTeams.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No teams currently playing</p>';
+            return;
+        }
+        
+        let html = '<div class="row">';
+        playingTeams.forEach(team => {
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card border-warning status-playing">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <span class="badge bg-warning text-dark me-2">#${team.queue_number || 'N/A'}</span>
+                                Team ${team.team_id}
+                            </h6>
+                            <p class="card-text">
+                                <strong>${team.player1_name} & ${team.player2_name}</strong><br>
+                                <small class="text-muted">
+                                    <i class="fas fa-play text-warning"></i> Playing Now
+                                    ${team.validated_at ? ' • Started: ' + new Date(team.validated_at).toLocaleTimeString() : ''}
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    
+    function displayNextUp(teams) {
+        const container = document.getElementById('next-up');
+        const waitingTeams = teams.filter(team => team.status === 'validated' || team.status === 'waiting')
+                                  .sort((a, b) => (a.queue_number || 999) - (b.queue_number || 999));
+        
+        if (waitingTeams.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No teams waiting to play</p>';
+            return;
+        }
+        
+        if (waitingTeams.length === 1) {
+            container.innerHTML = `
+                <div class="alert alert-info text-center">
+                    <h6><i class="fas fa-info-circle"></i> Only one team waiting</h6>
+                    <p class="mb-0">Need at least 2 teams to start the next match</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Show next 2 teams that will play against each other
+        const nextTwoTeams = waitingTeams.slice(0, 2);
+        
+        let html = `
+            <div class="alert alert-success text-center mb-3">
+                <h6><i class="fas fa-vs"></i> Next Match Ready</h6>
+                <small class="text-muted">These two teams will play against each other next</small>
+            </div>
+            <div class="row">
+        `;
+        
+        nextTwoTeams.forEach((team, index) => {
+            html += `
+                <div class="col-md-6 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body text-center">
+                            <div class="d-flex justify-content-center align-items-center mb-2">
+                                <span class="badge bg-success me-2">#${team.queue_number || 'N/A'}</span>
+                                <i class="fas fa-arrow-right text-success"></i>
+                                <span class="badge bg-info ms-2">Ready</span>
+                            </div>
+                            <h6 class="card-title">Team ${team.team_id}</h6>
+                            <p class="card-text">
+                                <strong>${team.player1_name} & ${team.player2_name}</strong><br>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock text-warning"></i> 
+                                    ${index === 0 ? 'Team A' : 'Team B'} - Next Match
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        
+        // Show VS indicator between the two teams
+        if (nextTwoTeams.length === 2) {
+            html = html.replace('</div><div class="col-md-6 mb-3">', `
+                </div>
+                <div class="col-12 text-center mb-2">
+                    <div class="vs-indicator">
+                        <span class="badge bg-primary fs-5 px-3 py-2">
+                            <i class="fas fa-sword"></i> VS <i class="fas fa-shield"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+            `);
+        }
+        
+        // Add additional waiting teams info if there are more
+        if (waitingTeams.length > 2) {
+            html += `
+                <div class="col-12">
+                    <div class="alert alert-light text-center">
+                        <small class="text-muted">
+                            <i class="fas fa-users"></i> 
+                            ${waitingTeams.length - 2} more team${waitingTeams.length - 2 > 1 ? 's' : ''} waiting in queue
+                        </small>
+                    </div>
+                </div>
+            `;
+        }
+        
+        container.innerHTML = html;
+    }
+    
+    function displayTeamQueue(groups) {
+        const container = document.getElementById('team-queue');
+        
+        if (!groups || groups.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No teams registered</p>';
+            return;
+        }
+        
+        let html = '';
+        groups.forEach(group => {
+            html += `
+                <div class="mb-4">
+                    <h6 class="text-primary mb-3">
+                        <i class="fas fa-users"></i> Group ${group.group_id} 
+                        <span class="badge bg-primary">${group.teams.length} teams</span>
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Queue #</th>
+                                    <th>Team</th>
+                                    <th>Players</th>
+                                    <th class="d-none d-md-table-cell">Status</th>
+                                    <th class="d-none d-sm-table-cell">Registered</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+            
+            // Sort teams by queue number
+            const sortedTeams = group.teams.sort((a, b) => (a.queue_number || 999) - (b.queue_number || 999));
+            
+            sortedTeams.forEach(team => {
+                const statusBadge = team.status === 'playing' ? 'bg-warning' : 
+                                   team.status === 'completed' ? 'bg-success' : 
+                                   team.status === 'validated' ? 'bg-info' : 'bg-secondary';
+                const statusText = team.status === 'playing' ? 'Playing' :
+                                  team.status === 'completed' ? 'Completed' :
+                                  team.status === 'validated' ? 'Ready' : 'Waiting';
+                
+                html += `
+                    <tr class="${team.status === 'playing' ? 'table-warning' : ''}">
+                        <td>
+                            <span class="badge bg-primary">${team.queue_number || 'N/A'}</span>
+                        </td>
+                        <td><strong>Team ${team.team_id}</strong></td>
+                        <td>${team.player1_name} & ${team.player2_name}</td>
+                        <td class="d-none d-md-table-cell">
+                            <span class="badge ${statusBadge}">${statusText}</span>
+                        </td>
+                        <td class="d-none d-sm-table-cell">
+                            <small>${team.validated_at ? new Date(team.validated_at).toLocaleString() : 'Not validated'}</small>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        });
+        
+        container.innerHTML = html;
+    }
+    
+    function displayRecentCompletions(teams) {
+        const container = document.getElementById('completed-matches');
+        const completedTeams = teams.filter(team => team.status === 'completed')
+                                   .sort((a, b) => new Date(b.completed_at || b.created_at) - new Date(a.completed_at || a.created_at))
+                                   .slice(0, 5);
+        
+        if (completedTeams.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">No completed matches yet</p>';
+            return;
+        }
+        
+        let html = '<div class="list-group list-group-flush">';
+        completedTeams.forEach(team => {
+            html += `
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-1">
+                            <span class="badge bg-secondary me-2">#${team.queue_number || 'N/A'}</span>
+                            Team ${team.team_id}
+                        </h6>
+                        <p class="mb-1">${team.player1_name} & ${team.player2_name}</p>
+                        <small class="text-muted">
+                            ${team.goal_time ? `Goal time: ${team.goal_time}s • ` : ''}
+                            Completed: ${team.completed_at ? new Date(team.completed_at).toLocaleString() : 'Recently'}
+                        </small>
+                    </div>
+                    <span class="badge bg-success">
+                        <i class="fas fa-check"></i> Done
+                    </span>
+                </div>
+            `;
+        });
+        html += '</div>';
+        
+        container.innerHTML = html;
+    }
+    
+    function updateLiveIndicator(status) {
+        const indicator = document.getElementById('live-indicator');
+        
+        switch(status) {
+            case 'loading':
+                indicator.className = 'badge bg-warning';
+                indicator.innerHTML = '<i class="fas fa-sync fa-spin"></i> <span class="d-none d-sm-inline">Loading...</span>';
+                break;
+            case 'success':
+                indicator.className = 'badge bg-success';
+                indicator.innerHTML = '<i class="fas fa-check"></i> <span class="d-none d-sm-inline">Updated</span>';
+                break;
+            case 'error':
+                indicator.className = 'badge bg-danger';
+                indicator.innerHTML = '<i class="fas fa-exclamation-triangle"></i> <span class="d-none d-sm-inline">Error</span>';
+                break;
+        }
+    }
+    
+    function refreshQueue() {
+        const button = event.target.closest('button');
+        const icon = button.querySelector('i');
+        
+        // Add spinning animation
+        icon.classList.add('fa-spin');
+        button.disabled = true;
+        
+        loadQueueData();
+        
+        // Remove spinning animation after 2 seconds
+        setTimeout(() => {
+            icon.classList.remove('fa-spin');
+            button.disabled = false;
+        }, 2000);
+    }
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+    });
+</script>
+{% endblock %}

@@ -13,7 +13,10 @@
                 <div class="alert alert-success">
                     <h5>Team ID: <strong>{{ team_id }}</strong></h5>
                     <p class="mb-0">
-                        <strong>{{ player1_name }}</strong> & <strong>{{ player2_name }}</strong>
+                        <strong>{{ player1_name }}</strong>{% if player1_pid %} (PID: {{ player1_pid }}){% endif %}{% if
+                        player1_phone %} - {{ player1_phone }}{% endif %} &
+                        <strong>{{ player2_name }}</strong>{% if player2_pid %} (PID: {{ player2_pid }}){% endif %}{% if
+                        player2_phone %} - {{ player2_phone }}{% endif %}
                     </p>
                     {% if payment_amount or payment_method %}
                     <hr>
@@ -34,11 +37,23 @@
                     <p class="mb-0"><i class="fas fa-info-circle text-warning"></i> Status: <strong>{{ payment_status
                             }}</strong></p>
                     {% endif %}
+                    {% if queue_number %}
+                    <hr>
+                    <div class="alert alert-info mb-2">
+                        <h5><i class="fas fa-list-ol text-primary"></i> Queue Information</h5>
+                        <p class="mb-1"><strong>🎯 Your Queue Number: <span class="badge bg-warning text-dark fs-6">{{
+                                    queue_number }}</span></strong></p>
+                        {% if group_id %}<p class="mb-0"><strong>👥 Group: {{ group_id }}</strong></p>{% endif %}
+                        <small class="text-muted">Teams will be called to play in queue number order. Please be ready
+                            when your number is called!</small>
+                    </div>
+                    {% endif %}
                     {% if email %}
                     <hr>
                     {% if email_sent %}
-                    <p class="mb-0"><i class="fas fa-envelope text-success"></i> QR code sent to: <strong>{{ email
-                            }}</strong></p>
+                    <p class="mb-0"><i class="fas fa-envelope text-success"></i> QR code with queue info sent to:
+                        <strong>{{ email }}</strong>
+                    </p>
                     {% else %}
                     <p class="mb-0"><i class="fas fa-exclamation-triangle text-warning"></i> Email: {{ email }} (sending
                         failed)</p>
@@ -69,6 +84,9 @@
                 </div>
 
                 <div class="d-grid gap-2 mt-4">
+                    <a href="/queue" class="btn btn-success">
+                        <i class="fas fa-list-ol"></i> View Team Queue
+                    </a>
                     <a href="{{ url_for('register_page') }}" class="btn btn-primary">
                         <i class="fas fa-plus"></i> Register Another Team
                     </a>

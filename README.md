@@ -1,269 +1,244 @@
-# QR Code-Based Team Registration System
+# MatchPulse - Team Registration System
 
-A comprehensive team registration and monitoring system with QR code validation, real-time updates, and mobile-friendly interface.
+A comprehensive team registration and tournament management system built with Flask, featuring real-time monitoring, QR code validation, and mobile-responsive design.
 
 ## 🚀 Features
 
-- **Team Registration**: Web-based registration with instant QR code generation
-- **Mobile QR Validation**: Mobile-friendly QR code scanning using device camera
-- **Real-time Monitoring**: Live dashboard showing team status and match progress
-- **Admin Panel**: Complete team management with status updates
-- **Database Integration**: PostgreSQL with Excel backup
-- **Real-time Updates**: WebSocket-based live updates across all dashboards
-- **Mobile Responsive**: Optimized for mobile devices and tablets
-- **Secure**: Encrypted QR codes with validation tokens
+### 📋 Team Registration
+- **Mobile-optimized registration form** with validation
+- **Indian mobile number validation** with predefined +91 country code
+- **QR code generation** for each team with encrypted data
+- **Email notifications** with QR codes and queue information
+- **Payment tracking** with multiple payment methods
+- **Queue management** with group organization
 
-## 🛠️ Tech Stack
+### 🔐 Security & Authentication
+- **Page-specific password protection** with random generation
+- **Encrypted QR codes** for secure validation
+- **Session management** with automatic expiration
+- **Email-based password delivery** (sent only on first startup)
 
-- **Backend**: Python Flask 3.0+, Flask-SocketIO
-- **Database**: PostgreSQL (with Excel backup using openpyxl)
-- **Frontend**: HTML5, CSS3, Bootstrap 5, JavaScript
-- **QR Code**: Python qrcode library + html5-qrcode for scanning
-- **Real-time**: WebSocket (Socket.IO)
-- **Deployment**: Render (with HTTPS)
+### 📱 Real-time Monitoring
+- **Live team status updates** via WebSocket
+- **Currently playing teams** with match controls
+- **Queue visualization** with next teams display
+- **Leaderboard** with goal time tracking
+- **Mobile-responsive design** for all devices
 
-## 📋 Prerequisites
+### 🎯 Tournament Management
+- **Team validation** via QR code scanning
+- **Match status tracking** (Waiting → Playing → Completed)
+- **Goal time recording** with leaderboard rankings
+- **Winner identification** with phone number contact
+- **Excel export** with detailed statistics
 
-- Python 3.11+
-- PostgreSQL database (local or cloud like Neon)
-- Modern web browser with camera support for QR scanning
+### 🌐 Public Features
+- **Public queue page** for teams to check their position
+- **Real-time updates** without admin access
+- **Mobile-friendly interface** for participants
+- **Tournament progress tracking**
 
-## 🔧 Installation
+## 🛠️ Technology Stack
 
-### 1. Clone the Repository
-```bash
-git clone <repository-url>
-cd team-registration-system
-```
+- **Backend**: Flask (Python)
+- **Database**: PostgreSQL (production) / SQLite (development)
+- **Real-time**: Socket.IO for live updates
+- **Frontend**: Bootstrap 5, JavaScript
+- **QR Codes**: Python qrcode library
+- **Email**: SMTP with HTML templates
+- **Deployment**: Heroku-ready with Procfile
 
-### 2. Create Virtual Environment
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
+## 📦 Installation
 
-### 3. Install Dependencies
-```bash
-pip install -r requirements.txt
-```
+### Prerequisites
+- Python 3.9+
+- PostgreSQL (for production)
+- SMTP email account
 
-### 4. Environment Configuration
-```bash
-cp .env.example .env
-```
+### Local Development Setup
 
-Edit `.env` file with your configuration:
-```env
-DATABASE_URL=postgresql://username:password@localhost/team_registration
-SECRET_KEY=your-super-secret-key-here
-ENCRYPTION_KEY=your-encryption-key-here
-PORT=5000
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/taksh1507/MatchPulse.git
+   cd MatchPulse
+   ```
 
-### 5. Database Setup
+2. **Create virtual environment**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-#### Option A: Local PostgreSQL
-```bash
-# Create database
-createdb team_registration
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-# Update DATABASE_URL in .env
-DATABASE_URL=postgresql://localhost/team_registration
-```
+4. **Set up environment variables**
+   Create a `.env` file:
+   ```env
+   SECRET_KEY=your-secret-key-here
+   DATABASE_URL=sqlite:///teams.db
+   SMTP_SERVER=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USERNAME=your-email@gmail.com
+   SMTP_PASSWORD=your-app-password
+   ```
 
-#### Option B: Neon (Cloud PostgreSQL)
-1. Sign up at [Neon](https://neon.tech)
-2. Create a new database
-3. Copy connection string to `.env`
+5. **Run the application**
+   ```bash
+   python app_ngrok_optimized.py
+   ```
 
-### 6. Run the Application
-```bash
-python app.py
-```
+### Heroku Deployment
 
-The application will be available at `http://localhost:5000`
+1. **Create Heroku app**
+   ```bash
+   heroku create your-app-name
+   ```
 
-## 🌐 Deployment on Render
+2. **Add PostgreSQL addon**
+   ```bash
+   heroku addons:create heroku-postgresql:mini
+   ```
 
-### 1. Prepare for Deployment
-- Ensure all files are committed to Git
-- Push to GitHub repository
+3. **Set environment variables**
+   ```bash
+   heroku config:set SECRET_KEY=your-secret-key
+   heroku config:set SMTP_SERVER=smtp.gmail.com
+   heroku config:set SMTP_PORT=587
+   heroku config:set SMTP_USERNAME=your-email@gmail.com
+   heroku config:set SMTP_PASSWORD=your-app-password
+   ```
 
-### 2. Create Render Web Service
-1. Go to [Render Dashboard](https://dashboard.render.com)
-2. Click "New" → "Web Service"
-3. Connect your GitHub repository
-4. Configure:
-   - **Name**: team-registration-system
-   - **Environment**: Python 3
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn --worker-class eventlet -w 1 app:app`
+4. **Deploy**
+   ```bash
+   git push heroku main
+   ```
 
-### 3. Environment Variables
-Add these environment variables in Render:
-```
-DATABASE_URL=your-postgresql-connection-string
-SECRET_KEY=your-secret-key
-ENCRYPTION_KEY=your-encryption-key
-```
+## 🔧 Configuration
 
-### 4. Database Setup
-- Use Render PostgreSQL or external service like Neon
-- Database tables will be created automatically on first run
+### Email Setup
+The system requires SMTP configuration for:
+- QR code delivery to teams
+- Password notifications to admin
+- Winner notifications
 
-## 📱 Usage Guide
+### Database Migration
+The app automatically handles database schema updates on startup.
 
-### For Event Organizers
+### Password Management
+- Passwords are randomly generated on first startup
+- Stored in `page_passwords.json` (excluded from git)
+- Can be regenerated via admin panel
+- Sent via email to configured admin address
 
-#### 1. Team Registration
-- Navigate to `/register`
-- Enter player names and payment status
-- System generates unique Team ID and QR code
-- QR code can be downloaded or printed
-
-#### 2. Admin Panel (`/admin`)
-- View all registered teams
-- Update team status (Waiting → Playing → Completed)
-- Download QR codes
-- View team statistics
-
-#### 3. Live Monitor (`/monitor`)
-- Real-time dashboard for event display
-- Shows currently playing teams
-- Lists validated teams ready to play
-- Auto-updates when teams are validated
-
-### For Volunteers/Staff
-
-#### QR Code Validation (`/validate`)
-- Mobile-friendly QR scanner
-- Point camera at team's QR code
-- Instant validation with team details
-- Prevents duplicate validations
-- Audio/visual feedback on successful scan
+## 📱 Usage
 
 ### For Participants
+1. **Register**: Fill out team registration form
+2. **Receive QR Code**: Check email for QR code and queue number
+3. **Check Queue**: Visit `/queue` to see current position
+4. **Validate**: Present QR code at venue for validation
+5. **Play**: Wait for your turn based on queue number
 
-#### Registration Process
-1. Register team online or on-site
-2. Receive QR code (download/email/print)
-3. Present QR code at venue for validation
-4. Monitor status on live dashboard
+### For Organizers
+1. **Monitor**: Use `/monitor` for real-time tournament tracking
+2. **Validate**: Use `/validate` to scan QR codes and start matches
+3. **Admin**: Use `/admin` for team management and exports
+4. **Queue**: Public `/queue` page for participant reference
+
+## 🎮 Tournament Flow
+
+1. **Registration** → Teams register and receive QR codes
+2. **Queue Assignment** → Teams get queue numbers and group assignments
+3. **Validation** → QR codes scanned to mark teams as ready
+4. **Playing** → Teams called in queue order to play matches
+5. **Goal Recording** → Goal times recorded for leaderboard
+6. **Completion** → Matches marked complete, winners identified
+
+## 📊 Features Overview
+
+### Pages & Access Levels
+- **Home** (`/`) - Public access
+- **Register** (`/register`) - Password protected
+- **Queue** (`/queue`) - Public access
+- **Validate** (`/validate`) - Password protected
+- **Monitor** (`/monitor`) - Password protected
+- **Admin** (`/admin`) - Password protected
+
+### API Endpoints
+- `/api/teams` - Team data
+- `/api/queue` - Queue information
+- `/api/leaderboard` - Goal time rankings
+- `/api/stats` - Tournament statistics
+- `/api/playing_queue` - Current playing order
+
+### Real-time Events
+- Team registration notifications
+- Validation status updates
+- Match completion alerts
+- Goal time recordings
+- Queue position changes
 
 ## 🔒 Security Features
 
-- **Encrypted QR Codes**: QR data is encrypted with timestamp validation
-- **Duplicate Prevention**: Teams cannot be validated multiple times
-- **Secure Database**: PostgreSQL with parameterized queries
-- **HTTPS**: Secure connections in production
+- **Encrypted QR codes** with timestamp validation
+- **Random password generation** for admin access
+- **Session-based authentication** with expiration
+- **Input validation** for all forms
+- **Mobile number formatting** and validation
+- **SQL injection prevention** with parameterized queries
 
-## 📊 API Endpoints
+## 📱 Mobile Optimization
 
-- `GET /api/teams` - Get all teams data
-- `GET /api/stats` - Get team statistics
-- `POST /validate` - Validate QR code
-- `POST /admin/update_status` - Update team status
+- **Responsive design** for all screen sizes
+- **Touch-friendly buttons** (minimum 44px)
+- **Optimized forms** for mobile input
+- **Fast loading** with efficient asset delivery
+- **Offline-capable** QR code storage
 
-## 🔄 Real-time Events
+## 🚀 Performance Features
 
-The system uses WebSocket for real-time updates:
-- `team_registered` - New team registration
-- `team_validated` - Team QR code validated
-- `status_updated` - Team status changed
-- `stats_update` - Statistics updated
+- **Database caching** for frequently accessed data
+- **Optimized queries** with proper indexing
+- **Real-time updates** via WebSocket
+- **Lazy loading** for large datasets
+- **Compressed assets** for faster loading
 
-## 📁 Project Structure
+## 📈 Analytics & Reporting
 
-```
-team-registration-system/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── Procfile              # Render deployment config
-├── runtime.txt           # Python version
-├── .env.example          # Environment variables template
-├── templates/            # HTML templates
-│   ├── base.html
-│   ├── index.html
-│   ├── register.html
-│   ├── registration_success.html
-│   ├── validate.html
-│   ├── monitor.html
-│   └── admin.html
-├── static/               # Static files
-│   ├── css/
-│   │   └── custom.css
-│   └── qr_codes/        # Generated QR codes
-└── teams_backup.xlsx     # Excel backup file
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### Database Connection Error
-```bash
-# Check PostgreSQL is running
-pg_isready
-
-# Verify connection string
-psql $DATABASE_URL
-```
-
-#### QR Scanner Not Working
-- Ensure HTTPS in production (required for camera access)
-- Check browser permissions for camera
-- Verify good lighting conditions
-
-#### Real-time Updates Not Working
-- Check WebSocket connection in browser console
-- Verify no firewall blocking WebSocket connections
-- Ensure eventlet is installed for production
-
-### Development Tips
-
-#### Reset Database
-```python
-# In Python shell
-from app import init_database
-init_database()
-```
-
-#### Generate New Encryption Key
-```python
-from cryptography.fernet import Fernet
-print(Fernet.generate_key().decode())
-```
+- **Excel export** with detailed team information
+- **Leaderboard tracking** with goal times
+- **Tournament statistics** and progress metrics
+- **Winner identification** with contact information
+- **Historical data** preservation
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## 👨‍💻 Author
 
-For support and questions:
-- Create an issue on GitHub
-- Check the troubleshooting section
-- Review the API documentation
+**Taksh Gandhi**
+- GitHub: [@taksh1507](https://github.com/taksh1507)
+- Email: takshgandhi4@gmail.com
 
-## 🎯 Roadmap
+## 🙏 Acknowledgments
 
-- [ ] Email notifications for QR codes
-- [ ] Leaderboard and scoring system
-- [ ] PWA support for offline scanning
-- [ ] Push notifications
-- [ ] Advanced reporting and analytics
-- [ ] Multi-event support
-- [ ] Team photo upload
-- [ ] SMS notifications
+- Bootstrap for responsive UI components
+- Flask community for excellent documentation
+- Socket.IO for real-time functionality
+- QR code libraries for secure validation
 
 ---
 
-**Built with ❤️ for seamless event management**
+**MatchPulse** - Streamlining tournament management with modern web technology! 🏆

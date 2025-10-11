@@ -14,8 +14,8 @@ if port:
 else:
     print("🚀 WSGI: Using default port configuration")
 
-# For gunicorn, we need to expose the socketio app
-application = socketio
+# For gunicorn, expose the Flask app (SocketIO will work through it)
+application = app
 
 # Ensure the app is ready for production
 print("✅ WSGI: Application ready for gunicorn")

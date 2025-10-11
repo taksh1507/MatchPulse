@@ -68,7 +68,7 @@ try:
     app.config['MAIL_PASSWORD'] = os.environ.get('SMTP_PASSWORD')
     app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('SMTP_USERNAME')
 
-    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+    socketio = SocketIO(app, cors_allowed_origins="*")
 
     # Excel file path and in-memory storage
     EXCEL_FILE = 'teams_backup.xlsx'
@@ -992,4 +992,5 @@ except Exception as e:
     print(f"❌ Application startup failed: {e}", flush=True)
     import traceback
     traceback.print_exc()
-    input("Press Enter to exit...")
+    # Don't use input() in production - it blocks deployment
+    print("❌ Application failed to start. Check logs above for details.")

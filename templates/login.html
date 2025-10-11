@@ -13,12 +13,19 @@
 
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-red) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --accent-blue: #0066ff;
+            --accent-red: #ff0033;
+            --light-blue: #3399ff;
+            --dark-red: #cc0029;
         }
 
         .login-container {
@@ -63,7 +70,7 @@
         }
 
         .page-badge {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-red));
             color: white;
             padding: 8px 20px;
             border-radius: 25px;
@@ -71,6 +78,7 @@
             font-weight: 600;
             display: inline-block;
             margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);
         }
 
         .password-info {
@@ -115,12 +123,12 @@
         }
 
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.2rem rgba(0, 102, 255, 0.25);
         }
 
         .btn-login {
-            background: linear-gradient(45deg, #667eea, #764ba2);
+            background: linear-gradient(45deg, var(--accent-blue), var(--accent-red));
             border: none;
             border-radius: 25px;
             padding: 15px 40px;
@@ -131,6 +139,7 @@
             margin-top: 20px;
             transition: all 0.3s ease;
             min-height: 50px; /* Touch-friendly */
+            box-shadow: 0 5px 15px rgba(0, 102, 255, 0.4), 0 2px 8px rgba(255, 0, 51, 0.3);
         }
         
         @media (max-width: 576px) {
@@ -143,7 +152,7 @@
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 102, 255, 0.6), 0 4px 15px rgba(255, 0, 51, 0.5);
             color: white;
         }
 

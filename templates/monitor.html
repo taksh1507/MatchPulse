@@ -31,34 +31,34 @@
         <!-- Quick Stats Row -->
         <div class="row mb-4">
             <div class="col-6 col-md-3">
-                <div class="card text-center">
+                <div class="card text-center text-white" style="background: linear-gradient(45deg, var(--accent-blue), var(--light-blue)); box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);">
                     <div class="card-body py-2">
                         <h5 class="card-title mb-1" id="total-teams">0</h5>
-                        <small class="text-muted">Total Teams</small>
+                        <small class="opacity-90">Total Teams</small>
                     </div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card text-center">
+                <div class="card text-center text-white" style="background: linear-gradient(45deg, #28a745, #20c997); box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">
                     <div class="card-body py-2">
                         <h5 class="card-title mb-1" id="validated-teams">0</h5>
-                        <small class="text-muted">Validated</small>
+                        <small class="opacity-90">Validated</small>
                     </div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card text-center">
+                <div class="card text-center text-white" style="background: linear-gradient(45deg, var(--accent-red), #ff6666); box-shadow: 0 4px 15px rgba(255, 0, 51, 0.3);">
                     <div class="card-body py-2">
                         <h5 class="card-title mb-1" id="playing-teams">0</h5>
-                        <small class="text-muted">Playing</small>
+                        <small class="opacity-90">Playing</small>
                     </div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card text-center">
+                <div class="card text-center text-white" style="background: linear-gradient(45deg, #6c757d, #adb5bd); box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);">
                     <div class="card-body py-2">
                         <h5 class="card-title mb-1" id="completed-teams">0</h5>
-                        <small class="text-muted">Completed</small>
+                        <small class="opacity-90">Completed</small>
                     </div>
                 </div>
             </div>
@@ -848,7 +848,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        showNotification(`⏱️ Goal time ${data.goal_time}s recorded for Team ${sanitizeHTML(teamId)}!`, 'success');
+                        showNotification(data.message, 'success');
                         playNotificationSound();
 
                         const teamElement = document.getElementById(`playing-team-${sanitizeHTML(teamId)}`);
@@ -898,7 +898,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        showNotification(`Team ${sanitizeHTML(teamId)} marked as COMPLETED! Admin has been notified.`, 'success');
+                        showNotification(data.message, 'success');
                         playNotificationSound();
 
                         const teamElement = document.getElementById(`playing-team-${sanitizeHTML(teamId)}`);

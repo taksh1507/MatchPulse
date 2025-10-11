@@ -20,7 +20,7 @@
         <!-- Statistics Overview -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card bg-primary text-white">
+                <div class="card text-white" style="background: linear-gradient(45deg, var(--accent-blue), var(--light-blue)); box-shadow: 0 4px 15px rgba(0, 102, 255, 0.3);">
                     <div class="card-body text-center">
                         <h3>{{ teams|length }}</h3>
                         <p class="mb-0">Total Teams</p>
@@ -28,7 +28,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card bg-success text-white">
+                <div class="card bg-success text-white" style="box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);">
                     <div class="card-body text-center">
                         <h3>{{ teams|selectattr('validation_status', 'equalto', 'Validated')|list|length }}</h3>
                         <p class="mb-0">Validated</p>
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card bg-warning text-white">
+                <div class="card text-white" style="background: linear-gradient(45deg, var(--accent-red), #ff6666); box-shadow: 0 4px 15px rgba(255, 0, 51, 0.3);">
                     <div class="card-body text-center">
                         <h3>{{ teams|selectattr('match_status', 'equalto', 'Playing')|list|length }}</h3>
                         <p class="mb-0">Playing</p>
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="card bg-secondary text-white">
+                <div class="card bg-secondary text-white" style="box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);">
                     <div class="card-body text-center">
                         <h3>{{ teams|selectattr('match_status', 'equalto', 'Completed')|list|length }}</h3>
                         <p class="mb-0">Completed</p>
@@ -280,6 +280,9 @@
                             <button class="btn btn-outline-warning" onclick="regeneratePasswords()">
                                 <i class="fas fa-key"></i> Regenerate Passwords
                             </button>
+                            <a href="{{ url_for('feedback_config') }}" class="btn btn-outline-info">
+                                <i class="fas fa-cogs"></i> Feedback Config
+                            </a>
                         </div>
                     </div>
                 </div>

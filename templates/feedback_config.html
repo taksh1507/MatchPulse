@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Feedback Configuration - TEAM RAW Admin{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="card glow-border">
+            <div class="card-header text-center" style="background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-orange) 100%);">
+                <h4 class="mb-0" style="font-family: 'Orbitron', sans-serif; font-weight: 700;">
+                    <i class="fas fa-cogs me-2"></i>FEEDBACK FORM CONFIGURATION
+                </h4>
+                <small class="opacity-90" style="font-family: 'Rajdhani', sans-serif;">Configure Google Form integration</small>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    <div class="mb-4">
+                        <h5 class="mb-3" style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                            <i class="fas fa-link me-2"></i>GOOGLE FORM SETTINGS
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label for="form_id" class="form-label">Google Form ID</label>
+                            <input type="text" class="form-control" id="form_id" name="form_id" 
+                                   value="{{ form_id }}" 
+                                   placeholder="1FAIpQLSe_YOUR_GOOGLE_FORM_ID_HERE" required>
+                            <div class="form-text">Extract from your Google Form URL after /forms/d/e/</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="team_field" class="form-label">Team ID Field Entry</label>
+                            <input type="text" class="form-control" id="team_field" name="team_field" 
+                                   value="{{ team_field }}" 
+                                   placeholder="entry.123456789" required>
+                            <div class="form-text">Entry field ID for Team ID (e.g., entry.123456789)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="player1_field" class="form-label">Player 1 Field Entry</label>
+                            <input type="text" class="form-control" id="player1_field" name="player1_field" 
+                                   value="{{ player1_field }}" 
+                                   placeholder="entry.987654321" required>
+                            <div class="form-text">Entry field ID for Player 1 Name</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="player2_field" class="form-label">Player 2 Field Entry</label>
+                            <input type="text" class="form-control" id="player2_field" name="player2_field" 
+                                   value="{{ player2_field }}" 
+                                   placeholder="entry.456789123" required>
+                            <div class="form-text">Entry field ID for Player 2 Name</div>
+                        </div>
+                    </div>
+
+                    <div class="alert" style="background: rgba(0, 212, 255, 0.1); border: 1px solid rgba(0, 212, 255, 0.3); border-radius: 15px;">
+                        <h6 style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                            <i class="fas fa-info-circle me-2"></i>HOW TO GET FIELD IDs
+                        </h6>
+                        <ol style="color: var(--text-light); font-family: 'Rajdhani', sans-serif; margin-bottom: 0;">
+                            <li>Open your Google Form in edit mode</li>
+                            <li>Click "Preview" to see the form</li>
+                            <li>Right-click on each field and "Inspect Element"</li>
+                            <li>Look for the "name" attribute (e.g., entry.123456789)</li>
+                            <li>Copy the entry.XXXXXXX value for each field</li>
+                        </ol>
+                    </div>
+
+                    <div class="d-grid gap-3 mt-4">
+                        <button type="submit" class="btn btn-lg py-3 robotics-btn" style="
+                            background: linear-gradient(45deg, var(--accent-blue) 0%, var(--accent-orange) 100%);
+                            border: none; color: white; font-family: 'Orbitron', sans-serif; font-weight: 700;
+                            text-transform: uppercase; letter-spacing: 1px;
+                            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.3); transition: all 0.3s ease;"
+                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0, 212, 255, 0.5)'" 
+                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0, 212, 255, 0.3)'">
+                            <i class="fas fa-save me-2"></i>UPDATE CONFIGURATION
+                        </button>
+                        <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Admin Panel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="card mt-4 glow-border">
+            <div class="card-header text-center" style="background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-blue) 100%);">
+                <h5 class="mb-0" style="font-family: 'Orbitron', sans-serif; font-weight: 700;">
+                    <i class="fas fa-eye me-2"></i>PREVIEW URL
+                </h5>
+            </div>
+            <div class="card-body">
+                <p style="color: var(--text-light); font-family: 'Rajdhani', sans-serif;">
+                    Generated feedback form URL (with sample data):
+                </p>
+                <div style="background: rgba(26, 26, 26, 0.8); padding: 15px; border-radius: 10px; border: 1px solid rgba(0, 212, 255, 0.3);">
+                    <code style="color: var(--accent-green); font-size: 0.9em; word-break: break-all;">
+                        https://docs.google.com/forms/d/e/{{ form_id }}/viewform?usp=pp_url&{{ team_field }}=SAMPLE001&{{ player1_field }}=Player1&{{ player2_field }}=Player2
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .form-control, .form-select {
+        background: rgba(26, 26, 26, 0.8) !important;
+        border: 1px solid rgba(0, 212, 255, 0.3) !important;
+        color: var(--text-light) !important;
+        font-family: 'Rajdhani', sans-serif;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background: rgba(26, 26, 26, 0.9) !important;
+        border-color: var(--accent-blue) !important;
+        box-shadow: 0 0 10px rgba(0, 212, 255, 0.3) !important;
+        color: var(--text-light) !important;
+    }
+    
+    .form-label {
+        color: var(--text-light) !important;
+        font-family: 'Rajdhani', sans-serif;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.9em;
+        letter-spacing: 0.5px;
+    }
+    
+    .form-text {
+        color: rgba(224, 224, 224, 0.7) !important;
+        font-family: 'Rajdhani', sans-serif;
+        font-size: 0.85em;
+    }
+    
+    code {
+        background: transparent !important;
+        padding: 0 !important;
+    }
+</style>
+{% endblock %}

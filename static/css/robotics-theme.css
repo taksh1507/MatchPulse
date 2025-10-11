@@ -1,0 +1,237 @@
+/* TEAM RAW Robotics Theme CSS - Blue & Red Edition */
+
+/* Color Variables */
+:root {
+    --accent-blue: #0066ff;
+    --accent-red: #ff0033;
+    --light-blue: #3399ff;
+    --dark-red: #cc0029;
+    --accent-green: #00ff88;
+    --accent-orange: #ff6b35;
+    --text-light: #e0e0e0;
+    --danger-color: #dc3545;
+}
+
+/* Custom animations */
+@keyframes roboticsPulse {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% { 
+        transform: scale(1.05);
+        opacity: 1;
+    }
+}
+
+@keyframes dataStream {
+    0% { 
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% { 
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes hologramFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Team RAW Logo Styles */
+.team-raw-logo {
+    position: relative;
+    display: inline-block;
+    padding: 15px;
+    background: radial-gradient(circle, rgba(0, 212, 255, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: roboticsPulse 3s ease-in-out infinite;
+}
+
+.team-raw-logo::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 2px solid var(--accent-blue);
+    border-radius: 50%;
+    opacity: 0.5;
+    animation: hologramFlicker 2s ease-in-out infinite;
+}
+
+/* Circuit board pattern overlay */
+.circuit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+/* Holographic text effect */
+.hologram-text {
+    background: linear-gradient(45deg, var(--accent-blue), var(--accent-red), var(--light-blue), var(--accent-blue));
+    background-size: 400% 400%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: hologramShift 3s ease-in-out infinite;
+}
+
+@keyframes hologramShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Data stream effect */
+.data-stream {
+    position: relative;
+    overflow: hidden;
+}
+
+.data-stream::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+    animation: dataStream 2s linear infinite;
+}
+
+/* Robotics button styles */
+.robotics-btn {
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+}
+
+.robotics-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.robotics-btn:hover::before {
+    left: 100%;
+}
+
+/* Terminal-style input */
+.terminal-input {
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.8) !important;
+    border: 1px solid var(--accent-blue) !important;
+    color: var(--accent-blue) !important;
+}
+
+.terminal-input:focus {
+    box-shadow: 0 0 15px rgba(0, 102, 255, 0.5) !important;
+}
+
+/* Status indicators */
+.status-online {
+    color: var(--accent-green);
+    animation: roboticsPulse 2s ease-in-out infinite;
+}
+
+.status-offline {
+    color: var(--danger-color);
+    opacity: 0.6;
+}
+
+.status-processing {
+    color: var(--accent-orange);
+    animation: hologramFlicker 1s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .team-raw-logo {
+        padding: 10px;
+    }
+    
+    .hologram-text {
+        font-size: 1.8rem;
+    }
+    
+    .robotics-btn {
+        font-size: 0.9rem;
+        padding: 12px 20px;
+    }
+    
+    /* Mobile logo sizes */
+    .navbar-brand img {
+        height: 50px !important;
+        width: 50px !important;
+    }
+    
+    /* Registration page logo on mobile */
+    .robotics-logo img {
+        height: 180px !important;
+        width: 180px !important;
+    }
+    
+    /* Success page logo on mobile */
+    .team-raw-logo img {
+        height: 150px !important;
+        width: 150px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small screens */
+    .navbar-brand img {
+        height: 45px !important;
+        width: 45px !important;
+    }
+    
+    .robotics-logo img {
+        height: 150px !important;
+        width: 150px !important;
+    }
+    
+    .team-raw-logo img {
+        height: 120px !important;
+        width: 120px !important;
+    }
+    
+    .hologram-text {
+        font-size: 1.5rem;
+    }
+}
+
+/* Print styles for QR codes */
+@media print {
+    .team-raw-logo,
+    .circuit-overlay,
+    .data-stream::after {
+        display: none;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+}

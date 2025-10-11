@@ -1,23 +1,48 @@
 {% extends "base.html" %}
 
-{% block title %}Registration Successful - Team Registration System{% endblock %}
+{% block title %}Mission Initialized - TEAM RAW Robotics{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-md-8 mx-auto">
-        <div class="card border-success">
-            <div class="card-header bg-success text-white text-center">
-                <h4 class="mb-0"><i class="fas fa-check-circle"></i> Registration Successful!</h4>
+        <!-- Team RAW Success Header -->
+        <div class="text-center mb-5">
+            <div class="team-raw-logo">
+                <img src="{{ url_for('static', filename='images/RawLogo.jpeg') }}" 
+                     alt="TEAM RAW Logo" 
+                     style="height: 200px; width: 200px; object-fit: contain; border-radius: 20px; 
+                            box-shadow: 0 0 35px rgba(0, 255, 136, 0.6), 0 0 70px rgba(0, 255, 136, 0.3); 
+                            border: 3px solid rgba(0, 255, 136, 0.7);
+                            animation: roboticsPulse 3s ease-in-out infinite;
+                            transition: all 0.3s ease;"
+                     onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 0 45px rgba(0, 255, 136, 0.8), 0 0 90px rgba(0, 255, 136, 0.4)'"
+                     onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 0 35px rgba(0, 255, 136, 0.6), 0 0 70px rgba(0, 255, 136, 0.3)'">
             </div>
-            <div class="card-body text-center">
-                <div class="alert alert-success">
-                    <h5>Team ID: <strong>{{ team_id }}</strong></h5>
-                    <p class="mb-0">
-                        <strong>{{ player1_name }}</strong>{% if player1_pid %} (PID: {{ player1_pid }}){% endif %}{% if
-                        player1_phone %} - {{ player1_phone }}{% endif %} &
-                        <strong>{{ player2_name }}</strong>{% if player2_pid %} (PID: {{ player2_pid }}){% endif %}{% if
-                        player2_phone %} - {{ player2_phone }}{% endif %}
-                    </p>
+            <h1 class="hologram-text mt-4" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.8rem; text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);">
+                MISSION INITIALIZED
+            </h1>
+        </div>
+        
+        <div style="padding: 20px;">
+            <div class="text-center mb-4">
+                <h4 class="mb-2" style="font-family: 'Orbitron', sans-serif; font-weight: 700; color: var(--team-blue);">
+                    <i class="fas fa-check-circle me-2"></i>TEAM REGISTRATION COMPLETE
+                </h4>
+                <small style="font-family: 'Rajdhani', sans-serif; color: var(--team-gray);">System status: OPERATIONAL</small>
+            </div>
+            <div class="text-center">
+                <div class="alert" style="background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(0, 212, 255, 0.2) 100%); border: 2px solid var(--accent-green); backdrop-filter: blur(10px);">
+                    <h4 style="color: var(--text-light); font-family: 'Orbitron', sans-serif; font-weight: 900; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); margin-bottom: 15px;">
+                        Team ID: <span style="color: var(--accent-green); font-size: 1.2em;">{{ team_id }}</span>
+                    </h4>
+                    <div style="background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; border: 1px solid rgba(0, 212, 255, 0.3);">
+                        <p class="mb-2" style="color: var(--text-light); font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1.1em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);">
+                            <span style="color: var(--accent-blue);">🤖 OPERATOR 1:</span> <strong>{{ player1_name }}</strong>{% if player1_pid %} <span style="color: var(--text-secondary);">(PID: {{ player1_pid }})</span>{% endif %}{% if player1_phone %} <span style="color: var(--accent-orange);">- {{ player1_phone }}</span>{% endif %}
+                        </p>
+                        <p class="mb-0" style="color: var(--text-light); font-family: 'Rajdhani', sans-serif; font-weight: 600; font-size: 1.1em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);">
+                            <span style="color: var(--accent-orange);">🤖 OPERATOR 2:</span> <strong>{{ player2_name }}</strong>{% if player2_pid %} <span style="color: var(--text-secondary);">(PID: {{ player2_pid }})</span>{% endif %}{% if player2_phone %} <span style="color: var(--accent-orange);">- {{ player2_phone }}</span>{% endif %}
+                        </p>
+                    </div>
                     {% if payment_amount or payment_method %}
                     <hr>
                     <div class="row">
@@ -39,13 +64,27 @@
                     {% endif %}
                     {% if queue_number %}
                     <hr>
-                    <div class="alert alert-info mb-2">
-                        <h5><i class="fas fa-list-ol text-primary"></i> Queue Information</h5>
-                        <p class="mb-1"><strong>🎯 Your Queue Number: <span class="badge bg-warning text-dark fs-6">{{
-                                    queue_number }}</span></strong></p>
-                        {% if group_id %}<p class="mb-0"><strong>👥 Group: {{ group_id }}</strong></p>{% endif %}
-                        <small class="text-muted">Teams will be called to play in queue number order. Please be ready
-                            when your number is called!</small>
+                    <div class="alert mb-2 data-stream" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(0, 255, 136, 0.2) 100%); border: 2px solid var(--accent-blue); backdrop-filter: blur(10px);">
+                        <h5 style="color: var(--text-light); font-family: 'Rajdhani', sans-serif; font-weight: 700; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); font-size: 1.3em;">
+                            <i class="fas fa-satellite-dish me-2" style="color: var(--accent-blue);"></i>MISSION QUEUE STATUS
+                        </h5>
+                        <p class="mb-2">
+                            <strong style="color: var(--text-light); font-size: 1.1em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);">
+                                🎯 QUEUE POSITION: 
+                                <span class="badge fs-5 glow-text" style="background: linear-gradient(45deg, var(--accent-orange) 0%, var(--accent-blue) 100%); color: white; font-family: 'Orbitron', sans-serif; padding: 8px 15px; font-weight: 900; text-shadow: none;">
+                                    {{ queue_number }}
+                                </span>
+                            </strong>
+                        </p>
+                        {% if group_id %}
+                        <p class="mb-2" style="color: var(--text-light); font-size: 1.1em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);">
+                            <strong>🤖 ROBOT SQUADRON: <span style="color: var(--accent-green);">{{ group_id }}</span></strong>
+                        </p>
+                        {% endif %}
+                        <small style="color: rgba(255, 255, 255, 0.9); font-family: 'Rajdhani', sans-serif; font-weight: 500; font-size: 1em; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);">
+                            <i class="fas fa-info-circle me-1" style="color: var(--accent-orange);"></i>
+                            Teams will be activated in queue sequence. Standby for mission deployment signal!
+                        </small>
                     </div>
                     {% endif %}
                     {% if email %}
@@ -96,7 +135,6 @@
                 </div>
             </div>
         </div>
-    </div>
 </div>
 
 <script>

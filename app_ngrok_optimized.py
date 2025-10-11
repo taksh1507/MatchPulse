@@ -69,6 +69,12 @@ try:
     # Admin email and page-specific passwords
     ADMIN_EMAIL = 'takshgandhi4@gmail.com'
     
+    # Google Form Configuration for Feedback
+    GOOGLE_FORM_ID = "1FAIpQLSe_YOUR_GOOGLE_FORM_ID_HERE"  # Replace with your actual Google Form ID
+    GOOGLE_FORM_TEAM_ID_FIELD = "entry.123456789"  # Replace with actual entry field ID for Team ID
+    GOOGLE_FORM_PLAYER1_FIELD = "entry.987654321"  # Replace with actual entry field ID for Player 1
+    GOOGLE_FORM_PLAYER2_FIELD = "entry.456789123"  # Replace with actual entry field ID for Player 2
+    
     # Password file to store generated passwords
     PASSWORD_FILE = 'page_passwords.json'
     
@@ -196,8 +202,8 @@ try:
             for page, password in PAGE_PASSWORDS.items():
                 password_rows += f"""
                 <tr>
-                    <td style="padding: 12px; border: 1px solid #ddd; background: #f8f9fa; font-weight: bold;">{page}</td>
-                    <td style="padding: 12px; border: 1px solid #ddd; background: #007bff; color: white; font-family: monospace; font-size: 16px; font-weight: bold;">{password}</td>
+                    <td style="padding: 15px; border: 1px solid rgba(0, 102, 255, 0.3); background: rgba(0, 102, 255, 0.1); font-weight: bold; color: #ffffff; font-size: 15px;">{page}</td>
+                    <td style="padding: 15px; border: 1px solid rgba(0, 102, 255, 0.3); background: linear-gradient(45deg, #0066ff, #ff0033); color: white; font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; text-align: center;">{password}</td>
                 </tr>
                 """
             
@@ -206,60 +212,71 @@ try:
             <html>
             <head>
                 <style>
-                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                    .container {{ max-width: 700px; margin: 0 auto; padding: 20px; }}
-                    .header {{ background: #28a745; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
-                    .content {{ background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }}
-                    .password-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-                    .info {{ background: #e3f2fd; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                    .note {{ background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107; }}
+                    body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333333; background: #f8f9fa; margin: 0; padding: 0; }}
+                    .container {{ max-width: 700px; margin: 0 auto; padding: 20px; background: white; }}
+                    .header {{ background: linear-gradient(135deg, #1e5aa8 0%, #c41e3a 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .content {{ background: white; padding: 25px; border-radius: 0 0 10px 10px; border: 1px solid #e0e0e0; }}
+                    .password-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0; }}
+                    .info {{ background: #f0f4ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #1e5aa8; }}
+                    .note {{ background: #fff5f5; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #c41e3a; }}
+                    .team-title {{ color: #1e5aa8; font-weight: bold; font-size: 24px; margin: 10px 0; }}
+                    .highlight-blue {{ color: #1e5aa8; font-weight: bold; }}
+                    .highlight-red {{ color: #c41e3a; font-weight: bold; }}
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>🔐 MatchPulse - All Access Passwords</h1>
-                        {'<div style="background: #ff6b6b; padding: 10px; margin-top: 10px; border-radius: 5px;"><strong>🆕 NEW PASSWORDS GENERATED</strong></div>' if newly_generated else ''}
+                        <div class="team-title">🔐 <span style="color: #87ceeb;">TEAM RAW</span> - <span style="color: #ffb6c1;">ACCESS PASSWORDS</span></div>
+                        {'<div style="background: rgba(196, 30, 58, 0.2); padding: 10px; margin-top: 12px; border-radius: 6px; border: 1px solid #c41e3a;"><strong style="font-size: 14px;">🆕 NEW PASSWORDS GENERATED</strong></div>' if newly_generated else ''}
                     </div>
                     <div class="content">
-                        <h2>{'🆕 Newly Generated' if newly_generated else '📋 Current'} Password List</h2>
-                        <p>{'New random passwords have been generated for your MatchPulse application:' if newly_generated else 'Here are the current passwords for your MatchPulse application pages:'}</p>
+                        <h2 style="color: #1e5aa8; font-size: 20px; margin-bottom: 15px;">{'🆕 New Passwords' if newly_generated else '📋 Current Passwords'}</h2>
+                        <p style="color: #333333; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                            {'New random passwords have been generated for your TEAM RAW system:' if newly_generated else 'Here are the current passwords for your TEAM RAW system:'}
+                        </p>
                         
                         <table class="password-table">
                             <thead>
-                                <tr style="background: #343a40; color: white;">
-                                    <th style="padding: 12px; border: 1px solid #ddd;">Page</th>
-                                    <th style="padding: 12px; border: 1px solid #ddd;">Password</th>
+                                <tr style="background: linear-gradient(45deg, #0066ff, #ff0033); color: white;">
+                                    <th style="padding: 15px; border: none; font-size: 16px; font-weight: bold;">Page</th>
+                                    <th style="padding: 15px; border: none; font-size: 16px; font-weight: bold;">Password</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td style="padding: 12px; border: 1px solid #ddd; background: #d4edda; font-weight: bold;">Home</td>
-                                    <td style="padding: 12px; border: 1px solid #ddd; background: #d4edda; color: #155724; font-weight: bold;">No Password Required</td>
+                                <tr style="background: rgba(40, 167, 69, 0.2);">
+                                    <td style="padding: 15px; border: 1px solid rgba(0, 102, 255, 0.3); background: rgba(40, 167, 69, 0.2); font-weight: bold; color: #ffffff;">Home</td>
+                                    <td style="padding: 15px; border: 1px solid rgba(0, 102, 255, 0.3); background: rgba(40, 167, 69, 0.2); color: #28a745; font-weight: bold; font-size: 16px;">No Password Required</td>
                                 </tr>
                                 {password_rows}
                             </tbody>
                         </table>
                         
                         <div class="info">
-                            <h4>📋 Application Details:</h4>
-                            <p><strong>{'Generated' if newly_generated else 'Loaded'}:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-                            <p><strong>Total Protected Pages:</strong> {len(PAGE_PASSWORDS)}</p>
-                            <p><strong>Public Pages:</strong> Home, Queue (no password required)</p>
-                            {'<p><strong>Status:</strong> 🆕 New random passwords generated and saved</p>' if newly_generated else '<p><strong>Status:</strong> 📋 Existing passwords loaded from file</p>'}
+                            <h4 style="color: #3399ff; font-size: 18px; margin-bottom: 15px;">📋 System Details:</h4>
+                            <p style="color: #ffffff; font-size: 15px; margin: 10px 0;"><strong class="highlight-white">{'Generated' if newly_generated else 'Loaded'}:</strong> <span class="highlight-blue">{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</span></p>
+                            <p style="color: #ffffff; font-size: 15px; margin: 10px 0;"><strong class="highlight-white">Total Protected Pages:</strong> <span class="highlight-red">{len(PAGE_PASSWORDS)}</span></p>
+                            <p style="color: #ffffff; font-size: 15px; margin: 10px 0;"><strong class="highlight-white">Public Pages:</strong> <span class="highlight-blue">Home, Queue (no password required)</span></p>
+                            {'<p style="color: #ffffff; font-size: 15px; margin: 10px 0;"><strong class="highlight-white">Status:</strong> <span class="highlight-red">🆕 New random passwords generated and saved</span></p>' if newly_generated else '<p style="color: #ffffff; font-size: 15px; margin: 10px 0;"><strong class="highlight-white">Status:</strong> <span class="highlight-blue">📋 Existing passwords loaded from file</span></p>'}
                         </div>
                         
                         <div class="note">
-                            <h4>📝 Important Notes:</h4>
-                            <ul>
-                                <li>{'🆕 These are NEW randomly generated passwords' if newly_generated else '📋 These are your current saved passwords'}</li>
-                                <li>Save this email for future reference</li>
-                                <li>Passwords are case-sensitive</li>
-                                <li>Each page requires its specific password</li>
-                                <li>Sessions expire when browser is closed</li>
-                                <li>Home and Queue pages are accessible without password</li>
-                                {'<li>🔄 Passwords will remain the same until manually regenerated</li>' if newly_generated else ''}
+                            <h4 style="color: #ff3366; font-size: 18px; margin-bottom: 15px;">📝 Important Security Notes:</h4>
+                            <ul style="color: #ffffff; font-size: 15px; line-height: 1.8;">
+                                <li><strong class="highlight-red">{'🆕 These are NEW randomly generated passwords' if newly_generated else '📋 These are your current saved passwords'}</strong></li>
+                                <li><strong class="highlight-white">Save this email</strong> for future reference and secure access</li>
+                                <li><strong class="highlight-blue">Passwords are case-sensitive</strong> - enter exactly as shown</li>
+                                <li><strong class="highlight-white">Each page requires</strong> its specific password for access</li>
+                                <li><strong class="highlight-red">Sessions expire</strong> when browser is closed for security</li>
+                                <li><strong class="highlight-blue">Home and Queue pages</strong> are accessible without password</li>
+                                {'<li><strong class="highlight-white">🔄 Passwords will remain the same</strong> until manually regenerated</li>' if newly_generated else ''}
                             </ul>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 30px 0; padding: 20px; background: rgba(51, 153, 255, 0.15); border-radius: 12px; border: 1px solid rgba(51, 153, 255, 0.3);">
+                            <p style="color: #3399ff; font-size: 18px; font-weight: bold; margin: 0;">
+                                <span style="color: #ff3366;">TEAM RAW</span> ROBOTICS COMPETITION SYSTEM 🏆
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -647,7 +664,7 @@ try:
             print(f"Sending QR code email to {email}...", flush=True)
             
             msg = MIMEMultipart('related')
-            msg['Subject'] = f'MatchPulse Ngrok - Team {team_id} QR Code'
+            msg['Subject'] = f'TEAM RAW - Team {team_id} Mission QR Code & Details'
             msg['From'] = app.config['MAIL_USERNAME']
             msg['To'] = email
             
@@ -656,56 +673,83 @@ try:
             <html>
             <head>
                 <style>
-                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                    .header {{ background: #007bff; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }}
-                    .content {{ background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }}
-                    .qr-container {{ text-align: center; margin: 20px 0; }}
-                    .qr-code {{ max-width: 200px; border: 2px solid #dee2e6; border-radius: 8px; padding: 10px; background: white; }}
-                    .team-info {{ background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }}
-                    .instructions {{ background: #d4edda; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                    .footer {{ text-align: center; margin-top: 30px; color: #6c757d; font-size: 14px; }}
-                    .ngrok-badge {{ background: #28a745; color: white; padding: 5px 10px; border-radius: 15px; font-size: 12px; }}
+                    body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333333; background: #f8f9fa; margin: 0; padding: 0; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; background: white; }}
+                    .header {{ background: linear-gradient(135deg, #1e5aa8 0%, #c41e3a 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .logo {{ width: 70px; height: 70px; border-radius: 10px; margin-bottom: 10px; border: 2px solid white; }}
+                    .content {{ background: white; padding: 25px; border-radius: 0 0 10px 10px; border: 1px solid #e0e0e0; }}
+                    .qr-container {{ text-align: center; margin: 20px 0; padding: 20px; background: #f8f9ff; border-radius: 10px; border: 2px solid #1e5aa8; }}
+                    .qr-code {{ max-width: 180px; border: 3px solid #1e5aa8; border-radius: 10px; padding: 10px; background: white; }}
+                    .team-info {{ background: #f0f4ff; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #1e5aa8; }}
+                    .instructions {{ background: #fff5f5; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #c41e3a; }}
+                    .social-links {{ text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; }}
+                    .social-btn {{ display: inline-block; margin: 0 8px; padding: 10px 20px; background: linear-gradient(45deg, #1e5aa8, #c41e3a); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; }}
+                    .footer {{ text-align: center; margin-top: 20px; color: #666666; font-size: 12px; }}
+                    .team-title {{ color: #1e5aa8; font-weight: bold; font-size: 24px; margin: 10px 0; }}
+                    .mission-badge {{ background: linear-gradient(45deg, #1e5aa8, #c41e3a); color: white; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; }}
+                    .highlight-blue {{ color: #1e5aa8; font-weight: bold; }}
+                    .highlight-red {{ color: #c41e3a; font-weight: bold; }}
+                    .highlight-dark {{ color: #333333; font-weight: bold; }}
                 </style>
             </head>
             <body>
                 <div class="container">
                     <div class="header">
-                        <h1>🎯 MatchPulse Team Registration</h1>
-                        <span class="ngrok-badge">Ngrok Edition</span>
+                        <img src="cid:team_logo" alt="TEAM RAW Logo" class="logo">
+                        <div class="team-title"><span style="color: #87ceeb;">TEAM</span> <span style="color: #ffb6c1;">RAW</span></div>
+                        <div style="font-size: 16px; margin: 8px 0;">Robotics Competition</div>
+                        <span class="mission-badge">TEAM REGISTRATION</span>
                     </div>
                     <div class="content">
                         <div class="team-info">
-                            <h2>Team Details</h2>
-                            <p><strong>Team ID:</strong> {team_id}</p>
-                            <p><strong>Player 1:</strong> {player1_name}</p>
-                            <p><strong>Player 2:</strong> {player2_name}</p>
-                            {f'<p><strong>🎯 Queue Number:</strong> <span style="background: #ffc107; padding: 3px 8px; border-radius: 4px; font-weight: bold;">{queue_number}</span></p>' if queue_number else ''}
-                            {f'<p><strong>👥 Group:</strong> {group_id}</p>' if group_id else ''}
+                            <h3 style="color: #1e5aa8; font-size: 18px; margin-bottom: 15px;">Team Details</h3>
+                            <p style="font-size: 14px; margin: 8px 0;"><strong class="highlight-dark">Team ID:</strong> <span class="highlight-blue">{team_id}</span></p>
+                            <p style="font-size: 14px; margin: 8px 0;"><strong class="highlight-dark">Player 1:</strong> <span class="highlight-blue">{player1_name}</span></p>
+                            <p style="font-size: 14px; margin: 8px 0;"><strong class="highlight-dark">Player 2:</strong> <span class="highlight-red">{player2_name}</span></p>
+                            {f'<p style="font-size: 14px; margin: 8px 0;"><strong class="highlight-dark">🎯 Queue Position:</strong> <span style="background: linear-gradient(45deg, #1e5aa8, #c41e3a); padding: 4px 12px; border-radius: 8px; font-weight: bold; color: white; font-size: 14px;">#{queue_number}</span></p>' if queue_number else ''}
+                            {f'<p style="font-size: 14px; margin: 8px 0;"><strong class="highlight-dark">Group:</strong> <span class="highlight-blue">{group_id}</span></p>' if group_id else ''}
                         </div>
                         
                         <div class="qr-container">
-                            <h3>Your Team QR Code</h3>
+                            <h3 style="color: #1e5aa8; font-size: 16px; margin-bottom: 15px;">🔐 Your QR Code</h3>
                             <img src="cid:qr_code" alt="Team QR Code" class="qr-code">
+                            <p style="margin-top: 10px; color: #c41e3a; font-size: 14px;"><strong>Present this at the competition</strong></p>
                         </div>
                         
                         <div class="instructions">
-                            <h4>📱 Important Information:</h4>
-                            <ul>
-                                <li>✅ Save this QR code on your phone</li>
-                                <li>✅ Use the ngrok HTTPS URL for camera access</li>
-                                <li>✅ Present QR code at venue for validation</li>
-                                <li>✅ Keep your Team ID: <strong>{team_id}</strong></li>
-                                {f'<li>🎯 <strong>Your Queue Number: {queue_number}</strong> - This is your playing order!</li>' if queue_number else ''}
-                                {f'<li>👥 You are in Group {group_id}</li>' if group_id else ''}
+                            <h3 style="color: #c41e3a; font-size: 16px; margin-bottom: 12px;">� InstIructions:</h3>
+                            <ul style="color: #333333; font-size: 14px; line-height: 1.6; margin: 0; padding-left: 20px;">
+                                <li><strong>Save this QR code</strong> to your device</li>
+                                <li><strong>Present at competition</strong> for team validation</li>
+                                <li><strong>Remember your Team ID:</strong> <span class="highlight-blue">{team_id}</span></li>
+                                {f'<li><strong class="highlight-red">Queue Position: #{queue_number}</strong> - Your turn order</li>' if queue_number else ''}
+                                {f'<li><strong>Group Assignment:</strong> <span class="highlight-blue">{group_id}</span></li>' if group_id else ''}
                             </ul>
-                            {f'<div style="background: #e7f3ff; padding: 15px; border-radius: 8px; margin-top: 15px;"><strong>🎮 Queue Information:</strong><br>You are number <strong>{queue_number}</strong> in the playing queue. Teams will be called to play in queue number order. Please be ready when your number is called!</div>' if queue_number else ''}
+                            {f'<div style="background: #e8f2ff; padding: 15px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #1e5aa8;"><strong style="color: #1e5aa8; font-size: 14px;">Competition Order:</strong><br><span style="color: #333333; font-size: 13px;">Your team is position <strong class="highlight-red">#{queue_number}</strong> in the queue. Please be ready when called!</span></div>' if queue_number else ''}
                         </div>
                         
-                        <p>Good luck with your match! 🏆</p>
+                        <div class="social-links">
+                            <h3 style="color: #c41e3a; margin-bottom: 12px; font-size: 16px;">🌐 Follow TEAM RAW</h3>
+                            <a href="https://www.instagram.com/teamraw_robotics" class="social-btn">
+                                📸 Instagram
+                            </a>
+                            <a href="https://www.linkedin.com/company/team-raw-robotics" class="social-btn">
+                                💼 LinkedIn
+                            </a>
+                            <p style="margin-top: 12px; color: #666666; font-size: 12px;">
+                                Follow us for updates and robotics content!
+                            </p>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 20px 0; padding: 15px; background: #f0f4ff; border-radius: 8px;">
+                            <p style="color: #1e5aa8; font-size: 16px; font-weight: bold; margin: 0;">
+                                🚀 Good Luck in the Competition! 🏆
+                            </p>
+                        </div>
                     </div>
                     <div class="footer">
-                        <p>MatchPulse Ngrok Edition | Mobile-Optimized QR System</p>
+                        <p style="color: #666666; font-size: 12px;">TEAM RAW Robotics Competition</p>
+                        <p style="color: #1e5aa8; font-size: 11px;">Powered by Innovation</p>
                     </div>
                 </div>
             </body>
@@ -727,6 +771,16 @@ try:
                 qr_image.add_header('Content-ID', '<qr_code>')
                 qr_image.add_header('Content-Disposition', 'inline', filename=f'team_{team_id}_qr.png')
                 msg.attach(qr_image)
+            
+            # Attach TEAM RAW logo
+            logo_path = 'static/images/RawLogo.jpeg'
+            if os.path.exists(logo_path):
+                with open(logo_path, 'rb') as f:
+                    logo_image_data = f.read()
+                    logo_image = MIMEImage(logo_image_data)
+                    logo_image.add_header('Content-ID', '<team_logo>')
+                    logo_image.add_header('Content-Disposition', 'inline', filename='team_raw_logo.jpeg')
+                    msg.attach(logo_image)
             
             # Send email using SMTP
             server = smtplib.SMTP(app.config['MAIL_SERVER'], app.config['MAIL_PORT'])
@@ -1043,6 +1097,42 @@ try:
                 # Invalidate cache
                 invalidate_cache()
                 
+                # Send feedback request email
+                feedback_sent = False
+                if team.get('email') and app.config['MAIL_USERNAME'] and app.config['MAIL_PASSWORD']:
+                    try:
+                        send_feedback_request_email(
+                            team['email'], 
+                            team_id, 
+                            team['player1_name'], 
+                            team['player2_name']
+                        )
+                        print(f"✅ Feedback request email sent to {team['email']} for team {team_id}", flush=True)
+                        feedback_sent = True
+                        
+                        # Send admin notification
+                        socketio.emit('admin_notification', {
+                            'type': 'feedback_sent',
+                            'priority': 'normal',
+                            'title': '📧 Feedback Email Sent',
+                            'message': f"Feedback request sent to {team['email']} for Team {team_id} (Completed without goal time)",
+                            'timestamp': datetime.now().isoformat(),
+                            'team_id': team_id
+                        })
+                        
+                    except Exception as e:
+                        print(f"❌ Failed to send feedback request email: {e}", flush=True)
+                        
+                        # Send admin notification for email failure
+                        socketio.emit('admin_notification', {
+                            'type': 'email_failed',
+                            'priority': 'high',
+                            'title': 'Email Send Failed',
+                            'message': f"Failed to send feedback email to Team {team_id}: {str(e)}",
+                            'timestamp': datetime.now().isoformat(),
+                            'team_id': team_id
+                        })
+                
                 # Emit real-time update
                 socketio.emit('team_completed', {
                     'team_id': team_id,
@@ -1051,9 +1141,18 @@ try:
                     'status': 'Completed'
                 })
                 
+                # Prepare success message based on email status
+                if feedback_sent:
+                    message = f'Team marked as completed successfully! 📧 Feedback request sent to {team["email"]}.'
+                elif team.get('email'):
+                    message = f'Team marked as completed successfully! ⚠️ Email sending failed - check admin notifications.'
+                else:
+                    message = f'Team marked as completed successfully! ℹ️ No email address on file for feedback request.'
+                
                 return jsonify({
                     'success': True, 
-                    'message': 'Team marked as completed successfully'
+                    'message': message,
+                    'feedback_sent': feedback_sent
                 })
             
             return jsonify({'success': False, 'message': 'Database update failed'})
@@ -1096,6 +1195,43 @@ try:
                 # Invalidate cache
                 invalidate_cache()
                 
+                # Send feedback request email when goal time is recorded
+                feedback_sent = False
+                if team.get('email') and app.config['MAIL_USERNAME'] and app.config['MAIL_PASSWORD']:
+                    try:
+                        send_feedback_request_email(
+                            team['email'], 
+                            team_id, 
+                            team['player1_name'], 
+                            team['player2_name']
+                        )
+                        print(f"✅ Feedback request email sent to {team['email']} for team {team_id} (Goal time: {goal_time_float}s)", flush=True)
+                        feedback_sent = True
+                        
+                        # Send admin notification
+                        socketio.emit('admin_notification', {
+                            'type': 'feedback_sent',
+                            'priority': 'normal',
+                            'title': '📧 Feedback Email Sent',
+                            'message': f"Feedback request sent to {team['email']} for Team {team_id} (Goal: {goal_time_float}s)",
+                            'timestamp': datetime.now().isoformat(),
+                            'team_id': team_id,
+                            'goal_time': goal_time_float
+                        })
+                        
+                    except Exception as e:
+                        print(f"❌ Failed to send feedback request email: {e}", flush=True)
+                        
+                        # Send admin notification for email failure
+                        socketio.emit('admin_notification', {
+                            'type': 'email_failed',
+                            'priority': 'high',
+                            'title': 'Email Send Failed',
+                            'message': f"Failed to send feedback email to Team {team_id}: {str(e)}",
+                            'timestamp': datetime.now().isoformat(),
+                            'team_id': team_id
+                        })
+                
                 # Emit real-time update
                 socketio.emit('goal_time_recorded', {
                     'team_id': team_id,
@@ -1105,10 +1241,28 @@ try:
                     'status': 'Completed'
                 })
                 
+                # Also emit team completion event for consistency
+                socketio.emit('team_completed', {
+                    'team_id': team_id,
+                    'player1_name': team['player1_name'],
+                    'player2_name': team['player2_name'],
+                    'goal_time': goal_time_float,
+                    'status': 'Completed'
+                })
+                
+                # Prepare success message based on email status
+                if feedback_sent:
+                    message = f'Goal time {goal_time_float}s recorded successfully! 📧 Feedback request sent to {team["email"]}.'
+                elif team.get('email'):
+                    message = f'Goal time {goal_time_float}s recorded successfully! ⚠️ Email sending failed - check admin notifications.'
+                else:
+                    message = f'Goal time {goal_time_float}s recorded successfully! ℹ️ No email address on file for feedback request.'
+                
                 return jsonify({
                     'success': True, 
-                    'message': f'Goal time {goal_time_float}s recorded successfully',
-                    'goal_time': goal_time_float
+                    'message': message,
+                    'goal_time': goal_time_float,
+                    'feedback_sent': feedback_sent
                 })
             
             return jsonify({'success': False, 'message': 'Database update failed'})
@@ -1870,6 +2024,379 @@ try:
         except Exception as e:
             print(f"❌ Error regenerating passwords: {e}", flush=True)
             return jsonify({'success': False, 'message': str(e)})
+
+    @app.route('/feedback')
+    def feedback_page():
+        """Feedback form page"""
+        team_id = request.args.get('team_id', '')
+        return render_template('feedback.html', team_id=team_id)
+
+    @app.route('/feedback', methods=['POST'])
+    def submit_feedback():
+        """Handle feedback form submission"""
+        try:
+            # Get form data
+            team_id = request.form.get('team_id')
+            email = request.form.get('email')
+            overall_rating = request.form.get('overall_rating')
+            registration_process = request.form.get('registration_process')
+            competition_organization = request.form.get('competition_organization')
+            venue_facilities = request.form.get('venue_facilities')
+            staff_support = request.form.get('staff_support')
+            what_went_well = request.form.get('what_went_well', '')
+            improvements = request.form.get('improvements', '')
+            additional_comments = request.form.get('additional_comments', '')
+            participate_again = request.form.get('participate_again')
+            recommend_others = request.form.get('recommend_others')
+            
+            # Store feedback in database (create table if not exists)
+            try:
+                if USE_POSTGRES:
+                    execute_query('''
+                        CREATE TABLE IF NOT EXISTS feedback (
+                            id SERIAL PRIMARY KEY,
+                            team_id VARCHAR(50),
+                            email VARCHAR(255),
+                            overall_rating INTEGER,
+                            registration_process INTEGER,
+                            competition_organization INTEGER,
+                            venue_facilities INTEGER,
+                            staff_support INTEGER,
+                            what_went_well TEXT,
+                            improvements TEXT,
+                            additional_comments TEXT,
+                            participate_again VARCHAR(50),
+                            recommend_others VARCHAR(50),
+                            submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        )
+                    ''')
+                else:
+                    execute_query('''
+                        CREATE TABLE IF NOT EXISTS feedback (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            team_id TEXT,
+                            email TEXT,
+                            overall_rating INTEGER,
+                            registration_process INTEGER,
+                            competition_organization INTEGER,
+                            venue_facilities INTEGER,
+                            staff_support INTEGER,
+                            what_went_well TEXT,
+                            improvements TEXT,
+                            additional_comments TEXT,
+                            participate_again TEXT,
+                            recommend_others TEXT,
+                            submitted_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                        )
+                    ''')
+            except Exception as e:
+                print(f"Error creating feedback table: {e}", flush=True)
+            
+            # Insert feedback
+            execute_query('''
+                INSERT INTO feedback (team_id, email, overall_rating, registration_process, 
+                                    competition_organization, venue_facilities, staff_support,
+                                    what_went_well, improvements, additional_comments,
+                                    participate_again, recommend_others)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (team_id, email, overall_rating, registration_process, competition_organization,
+                  venue_facilities, staff_support, what_went_well, improvements, 
+                  additional_comments, participate_again, recommend_others))
+            
+            # Send thank you email
+            if email and app.config['MAIL_USERNAME'] and app.config['MAIL_PASSWORD']:
+                try:
+                    send_feedback_thank_you_email(email, team_id)
+                except Exception as e:
+                    print(f"Error sending thank you email: {e}", flush=True)
+            
+            flash('🚀 Feedback transmitted successfully! Thank you for helping us improve.', 'success')
+            return redirect(url_for('index'))
+            
+        except Exception as e:
+            print(f"Error submitting feedback: {e}", flush=True)
+            flash('Error submitting feedback. Please try again.', 'error')
+            return render_template('feedback.html', team_id=request.form.get('team_id', ''))
+
+    def send_feedback_thank_you_email(email, team_id):
+        """Send thank you email after feedback submission"""
+        try:
+            msg = MIMEMultipart('related')
+            msg['Subject'] = f'TEAM RAW - Thank You for Your Feedback!'
+            msg['From'] = app.config['MAIL_USERNAME']
+            msg['To'] = email
+            
+            html_body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333333; background: #f8f9fa; margin: 0; padding: 0; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; background: white; }}
+                    .header {{ background: linear-gradient(135deg, #1e5aa8 0%, #c41e3a 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .logo {{ width: 70px; height: 70px; border-radius: 10px; margin-bottom: 10px; border: 2px solid white; }}
+                    .content {{ background: white; padding: 25px; border-radius: 0 0 10px 10px; border: 1px solid #e0e0e0; }}
+                    .thank-you {{ background: #f0f4ff; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #1e5aa8; text-align: center; }}
+                    .social-links {{ text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; }}
+                    .social-btn {{ display: inline-block; margin: 0 8px; padding: 10px 20px; background: linear-gradient(45deg, #1e5aa8, #c41e3a); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; }}
+                    .footer {{ text-align: center; margin-top: 20px; color: #666666; font-size: 12px; }}
+                    .team-title {{ color: #1e5aa8; font-weight: bold; font-size: 24px; margin: 10px 0; }}
+                    .highlight-blue {{ color: #1e5aa8; font-weight: bold; }}
+                    .highlight-red {{ color: #c41e3a; font-weight: bold; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <img src="cid:team_logo" alt="TEAM RAW Logo" class="logo">
+                        <div class="team-title"><span style="color: #87ceeb;">TEAM</span> <span style="color: #ffb6c1;">RAW</span></div>
+                        <div style="font-size: 16px; margin: 8px 0;">Thank You!</div>
+                    </div>
+                    <div class="content">
+                        <div class="thank-you">
+                            <h2 style="color: #1e5aa8; font-size: 20px; margin-bottom: 15px;">🚀 Feedback Received!</h2>
+                            <p style="font-size: 14px; color: #333333; line-height: 1.6; margin: 12px 0;">
+                                Thank you for taking the time to provide feedback about your robotics competition experience.
+                            </p>
+                            <p style="color: #c41e3a; font-size: 14px; margin: 12px 0;">
+                                <strong>Team {team_id}</strong> - Your input helps us improve future competitions!
+                            </p>
+                        </div>
+                        
+                        <div style="background: #fff5f5; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #c41e3a;">
+                            <h3 style="color: #c41e3a; font-size: 16px; margin-bottom: 12px;">🔧 What Happens Next?</h3>
+                            <ul style="color: #333333; font-size: 13px; line-height: 1.6; margin: 0; padding-left: 20px;">
+                                <li><strong>Review:</strong> Your feedback will be analyzed by our team</li>
+                                <li><strong>Improvements:</strong> We'll use your suggestions for future events</li>
+                                <li><strong>Updates:</strong> You'll hear about upcoming competitions</li>
+                                <li><strong>Recognition:</strong> Look out for participant rewards</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="social-links">
+                            <h3 style="color: #1e5aa8; margin-bottom: 12px; font-size: 16px;">🌐 Follow TEAM RAW</h3>
+                            <a href="https://www.instagram.com/teamraw_robotics" class="social-btn">
+                                📸 Instagram
+                            </a>
+                            <a href="https://www.linkedin.com/company/team-raw-robotics" class="social-btn" style="background: linear-gradient(45deg, #0077B5, #3399ff);">
+                                💼 LinkedIn
+                            </a>
+                            <p style="margin-top: 15px; color: #ffffff; font-size: 14px;">
+                                Follow us for robotics updates, competition announcements, and behind-the-scenes content!
+                            </p>
+                        </div>
+                        
+                        <p style="text-align: center; color: #3399ff; font-size: 20px; font-weight: bold; margin: 30px 0;">
+                            <span style="color: #ff3366;">THANK YOU</span> FOR BEING PART OF THE ROBOTICS REVOLUTION! 🚀
+                        </p>
+                    </div>
+                    <div class="footer">
+                        <p style="color: #adb5bd; font-size: 14px;">TEAM RAW Robotics | Advanced Competition Management</p>
+                        <p style="color: #3399ff; font-size: 12px;">Your feedback drives our innovation</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Create alternative container
+            msg_alternative = MIMEMultipart('alternative')
+            msg.attach(msg_alternative)
+            
+            # Add HTML part
+            html_part = MIMEText(html_body, 'html')
+            msg_alternative.attach(html_part)
+            
+            # Attach TEAM RAW logo
+            logo_path = 'static/images/RawLogo.jpeg'
+            if os.path.exists(logo_path):
+                with open(logo_path, 'rb') as f:
+                    logo_image_data = f.read()
+                    logo_image = MIMEImage(logo_image_data)
+                    logo_image.add_header('Content-ID', '<team_logo>')
+                    logo_image.add_header('Content-Disposition', 'inline', filename='team_raw_logo.jpeg')
+                    msg.attach(logo_image)
+            
+            # Send email
+            server = smtplib.SMTP(app.config['MAIL_SERVER'], app.config['MAIL_PORT'])
+            server.starttls()
+            server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+            server.send_message(msg)
+            server.quit()
+            
+            print(f"✅ Thank you email sent to {email}", flush=True)
+            return True
+            
+        except Exception as e:
+            print(f"❌ Failed to send thank you email: {e}", flush=True)
+            return False
+
+    def send_feedback_request_email(email, team_id, player1_name, player2_name):
+        """Send feedback request email after game completion"""
+        try:
+            msg = MIMEMultipart('related')
+            msg['Subject'] = f'TEAM RAW - Mission Complete! Share Your Experience'
+            msg['From'] = app.config['MAIL_USERNAME']
+            msg['To'] = email
+            
+            # Google Form URL with pre-filled team details
+            google_form_url = f"https://docs.google.com/forms/d/e/{GOOGLE_FORM_ID}/viewform?usp=pp_url&{GOOGLE_FORM_TEAM_ID_FIELD}={team_id}&{GOOGLE_FORM_PLAYER1_FIELD}={player1_name}&{GOOGLE_FORM_PLAYER2_FIELD}={player2_name}"
+            
+            html_body = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: 'Arial', sans-serif; line-height: 1.6; color: #333333; background: #f8f9fa; margin: 0; padding: 0; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; background: white; }}
+                    .header {{ background: linear-gradient(135deg, #1e5aa8 0%, #c41e3a 100%); color: white; padding: 25px; text-align: center; border-radius: 10px 10px 0 0; }}
+                    .logo {{ width: 70px; height: 70px; border-radius: 10px; margin-bottom: 10px; border: 2px solid white; }}
+                    .content {{ background: white; padding: 25px; border-radius: 0 0 10px 10px; border: 1px solid #e0e0e0; }}
+                    .completion {{ background: #f0f4ff; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #1e5aa8; text-align: center; }}
+                    .feedback-section {{ background: #fff5f5; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #c41e3a; text-align: center; }}
+                    .feedback-btn {{ display: inline-block; padding: 15px 30px; background: linear-gradient(45deg, #1e5aa8, #c41e3a); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; font-size: 16px; margin: 12px 0; }}
+                    .social-links {{ text-align: center; margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 10px; }}
+                    .social-btn {{ display: inline-block; margin: 0 8px; padding: 10px 20px; background: linear-gradient(45deg, #1e5aa8, #c41e3a); color: white; text-decoration: none; border-radius: 20px; font-weight: bold; font-size: 13px; }}
+                    .footer {{ text-align: center; margin-top: 20px; color: #666666; font-size: 12px; }}
+                    .team-title {{ color: #1e5aa8; font-weight: bold; font-size: 24px; margin: 10px 0; }}
+                    .instructions {{ background: #f0f4ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #1e5aa8; }}
+                    .highlight-blue {{ color: #1e5aa8; font-weight: bold; }}
+                    .highlight-red {{ color: #c41e3a; font-weight: bold; }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <img src="cid:team_logo" alt="TEAM RAW Logo" class="logo">
+                        <div class="team-title"><span style="color: #87ceeb;">TEAM</span> <span style="color: #ffb6c1;">RAW</span></div>
+                        <div style="font-size: 16px; margin: 8px 0;">Competition Complete!</div>
+                    </div>
+                    <div class="content">
+                        <div class="completion">
+                            <h2 style="color: #1e5aa8; font-size: 20px; margin-bottom: 15px;">🏆 Congratulations!</h2>
+                            <p style="font-size: 14px; color: #333333; line-height: 1.6; margin: 12px 0;">
+                                <strong>Team {team_id}</strong> has successfully completed the robotics competition!
+                            </p>
+                            <p style="color: #c41e3a; font-size: 14px; margin: 12px 0;">
+                                <strong class="highlight-blue">{player1_name}</strong> & <strong class="highlight-red">{player2_name}</strong>
+                            </p>
+                            <p style="color: #1e5aa8; font-size: 14px; margin: 12px 0;">
+                                🚀 Your performance has been recorded!
+                            </p>
+                        </div>
+                        
+                        <div class="feedback-section">
+                            <h3 style="color: #c41e3a; margin-bottom: 12px; font-size: 18px;">📝 Share Your Experience</h3>
+                            <p style="color: #333333; margin-bottom: 15px; font-size: 14px; line-height: 1.6;">
+                                Help us improve future competitions by sharing your feedback. It only takes 3-5 minutes!
+                            </p>
+                            
+                            <a href="{google_form_url}" class="feedback-btn" target="_blank">
+                                📝 Complete Feedback Form
+                            </a>
+                            
+                            <div class="instructions">
+                                <h4 style="color: #3399ff; margin-bottom: 15px; font-size: 18px;">📋 FEEDBACK PROTOCOL:</h4>
+                                <ul style="color: #ffffff; text-align: left; margin: 0; padding-left: 20px; font-size: 15px; line-height: 1.8;">
+                                    <li>⚡ <strong>Quick Access:</strong> Form opens in new window/tab</li>
+                                    <li>🎯 <strong>Pre-filled Data:</strong> Your team details are already entered</li>
+                                    <li>⭐ <strong>Rate Experience:</strong> Evaluate different competition aspects</li>
+                                    <li>💡 <strong>Share Ideas:</strong> Provide improvement suggestions</li>
+                                    <li>🕐 <strong>Time Required:</strong> Only 3-5 minutes to complete</li>
+                                </ul>
+                            </div>
+                            
+                            <p style="font-size: 14px; color: #adb5bd; margin-top: 15px;">
+                                🔒 Your feedback is secure and confidential - it helps drive our innovation
+                            </p>
+                        </div>
+                        
+                        <div class="social-links">
+                            <h4 style="color: #3399ff; margin-bottom: 15px; font-size: 18px;">🌐 CONNECT WITH TEAM RAW</h4>
+                            <a href="https://www.instagram.com/teamraw_robotics" class="social-btn" style="background: linear-gradient(45deg, #E4405F, #ff3366);">
+                                📸 Instagram
+                            </a>
+                            <a href="https://www.linkedin.com/company/team-raw-robotics" class="social-btn" style="background: linear-gradient(45deg, #0077B5, #3399ff);">
+                                💼 LinkedIn
+                            </a>
+                            <p style="margin-top: 15px; color: #ffffff; font-size: 14px;">
+                                Follow us for competition results, robotics insights, and future event announcements!
+                            </p>
+                        </div>
+                        
+                        <p style="text-align: center; color: #3399ff; font-size: 20px; font-weight: bold; margin: 30px 0;">
+                            <span style="color: #ff3366;">THANK YOU</span> FOR PARTICIPATING IN THE ROBOTICS REVOLUTION! 🏆
+                        </p>
+                    </div>
+                    <div class="footer">
+                        <p style="color: #adb5bd; font-size: 14px;">TEAM RAW Robotics | Advanced Competition Management</p>
+                        <p style="color: #3399ff; font-size: 12px;">Building the future of robotics competitions</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+            
+            # Create alternative container
+            msg_alternative = MIMEMultipart('alternative')
+            msg.attach(msg_alternative)
+            
+            # Add HTML part
+            html_part = MIMEText(html_body, 'html')
+            msg_alternative.attach(html_part)
+            
+            # Attach TEAM RAW logo
+            logo_path = 'static/images/RawLogo.jpeg'
+            if os.path.exists(logo_path):
+                with open(logo_path, 'rb') as f:
+                    logo_image_data = f.read()
+                    logo_image = MIMEImage(logo_image_data)
+                    logo_image.add_header('Content-ID', '<team_logo>')
+                    logo_image.add_header('Content-Disposition', 'inline', filename='team_raw_logo.jpeg')
+                    msg.attach(logo_image)
+            
+            # Send email
+            server = smtplib.SMTP(app.config['MAIL_SERVER'], app.config['MAIL_PORT'])
+            server.starttls()
+            server.login(app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+            server.send_message(msg)
+            server.quit()
+            
+            print(f"✅ Feedback request email sent to {email}", flush=True)
+            return True
+            
+        except Exception as e:
+            print(f"❌ Failed to send feedback request email: {e}", flush=True)
+            return False
+
+    @app.route('/admin/feedback-config')
+    @login_required('Admin')
+    def feedback_config():
+        """Admin page to configure Google Form settings"""
+        return render_template('feedback_config.html', 
+                             form_id=GOOGLE_FORM_ID,
+                             team_field=GOOGLE_FORM_TEAM_ID_FIELD,
+                             player1_field=GOOGLE_FORM_PLAYER1_FIELD,
+                             player2_field=GOOGLE_FORM_PLAYER2_FIELD)
+
+    @app.route('/admin/feedback-config', methods=['POST'])
+    @login_required('Admin')
+    def update_feedback_config():
+        """Update Google Form configuration"""
+        try:
+            global GOOGLE_FORM_ID, GOOGLE_FORM_TEAM_ID_FIELD, GOOGLE_FORM_PLAYER1_FIELD, GOOGLE_FORM_PLAYER2_FIELD
+            
+            GOOGLE_FORM_ID = request.form.get('form_id', GOOGLE_FORM_ID)
+            GOOGLE_FORM_TEAM_ID_FIELD = request.form.get('team_field', GOOGLE_FORM_TEAM_ID_FIELD)
+            GOOGLE_FORM_PLAYER1_FIELD = request.form.get('player1_field', GOOGLE_FORM_PLAYER1_FIELD)
+            GOOGLE_FORM_PLAYER2_FIELD = request.form.get('player2_field', GOOGLE_FORM_PLAYER2_FIELD)
+            
+            flash('✅ Google Form configuration updated successfully!', 'success')
+            return redirect(url_for('feedback_config'))
+            
+        except Exception as e:
+            flash(f'❌ Error updating configuration: {str(e)}', 'error')
+            return redirect(url_for('feedback_config'))
 
     @app.route('/api/clear-cache', methods=['POST'])
     def clear_cache_endpoint():

@@ -12,54 +12,128 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts - Robotics Theme -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Team RAW Robotics Theme -->
+    <link href="{{ url_for('static', filename='css/robotics-theme.css') }}" rel="stylesheet">
     
     <style>
-        /* Mobile-first responsive design */
+        /* TEAM RAW Blue & Red Theme */
         :root {
-            --primary-color: #0d6efd;
+            --primary-color: #0066ff;
             --secondary-color: #6c757d;
-            --success-color: #198754;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --info-color: #0dcaf0;
+            --success-color: #00ff88;
+            --warning-color: #ffaa00;
+            --danger-color: #ff0033;
+            --info-color: #0066ff;
+            --dark-bg: #0f0f0f;
+            --card-bg: #1e1e1e;
+            --text-light: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-red: #ff0033;
+            --accent-blue: #0066ff;
+            --accent-light-blue: #3399ff;
+            --accent-dark-red: #cc0029;
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Orbitron', 'Roboto', 'Arial', sans-serif;
             line-height: 1.6;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a3e 30%, #2e1a1a 70%, #0a0a0a 100%);
+            background-attachment: fixed;
             min-height: 100vh;
+            color: var(--text-light);
+            position: relative;
+            overflow-x: hidden;
         }
         
-        /* Mobile-friendly navigation */
+        /* Animated circuit background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0, 102, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 0, 51, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(51, 153, 255, 0.08) 0%, transparent 50%);
+            z-index: -1;
+            animation: circuitPulse 8s ease-in-out infinite;
+        }
+        
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* Glowing effects */
+        .glow-text {
+            text-shadow: 0 0 10px var(--accent-blue), 0 0 20px var(--accent-blue), 0 0 30px var(--accent-blue);
+        }
+        
+        .glow-text-red {
+            text-shadow: 0 0 10px var(--accent-red), 0 0 20px var(--accent-red), 0 0 30px var(--accent-red);
+        }
+        
+        .glow-border {
+            box-shadow: 0 0 15px rgba(0, 102, 255, 0.4);
+            border: 1px solid rgba(0, 102, 255, 0.6);
+        }
+        
+        .glow-border-red {
+            box-shadow: 0 0 15px rgba(255, 0, 51, 0.4);
+            border: 1px solid rgba(255, 0, 51, 0.6);
+        }
+        
+        /* TEAM RAW Blue & Red Navigation */
         .navbar {
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(90deg, rgba(26, 26, 26, 0.95) 0%, rgba(62, 22, 33, 0.95) 50%, rgba(22, 33, 62, 0.95) 100%) !important;
+            box-shadow: 0 2px 20px rgba(0, 102, 255, 0.3);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid rgba(0, 102, 255, 0.4);
         }
         
         .navbar-brand {
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.3rem;
+            color: var(--accent-blue) !important;
+            text-shadow: 0 0 10px rgba(0, 102, 255, 0.6);
+            font-family: 'Orbitron', sans-serif;
+        }
+        
+        .navbar-brand:hover {
+            color: var(--accent-red) !important;
+            text-shadow: 0 0 15px rgba(255, 0, 51, 0.8);
+            transition: all 0.3s ease;
         }
         
         /* Mobile navigation improvements */
         @media (max-width: 991px) {
             .navbar-nav {
-                background: rgba(13, 110, 253, 0.95);
-                border-radius: 10px;
-                padding: 10px;
+                background: linear-gradient(135deg, rgba(26, 26, 26, 0.95) 0%, rgba(22, 33, 62, 0.95) 100%);
+                border-radius: 15px;
+                padding: 15px;
                 margin-top: 10px;
+                border: 1px solid rgba(0, 212, 255, 0.3);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             }
             
             .nav-link {
-                padding: 8px 15px !important;
-                margin: 2px 0;
-                border-radius: 5px;
+                color: var(--text-light) !important;
+                padding: 10px 15px !important;
+                margin: 3px 0;
+                border-radius: 8px;
                 transition: all 0.3s ease;
+                border: 1px solid transparent;
             }
             
             .nav-link:hover {
-                background: rgba(255,255,255,0.1);
+                background: rgba(0, 212, 255, 0.1);
+                border-color: rgba(0, 212, 255, 0.3);
+                color: var(--accent-blue) !important;
+                text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
             }
         }
         
@@ -76,19 +150,49 @@
             }
         }
         
-        /* Card improvements for mobile */
+        /* Robotics-themed card styling */
         .card {
-            border: none;
+            border: 2px solid rgba(0, 212, 255, 0.4);
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-            background: rgba(255,255,255,0.95);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 212, 255, 0.2);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
+            background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(25, 35, 65, 0.95) 100%);
+            color: var(--text-light);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+            animation: scanLine 3s linear infinite;
+        }
+        
+        @keyframes scanLine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4), 0 0 25px rgba(0, 212, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.6);
         }
         
         .card-header {
             border-radius: 15px 15px 0 0 !important;
             border: none;
-            font-weight: 600;
+            font-weight: 700;
+            background: linear-gradient(90deg, rgba(0, 212, 255, 0.3) 0%, rgba(255, 107, 53, 0.3) 100%);
+            border-bottom: 2px solid rgba(0, 212, 255, 0.5);
+            color: var(--text-light);
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         
         /* Button improvements for mobile */
@@ -187,8 +291,18 @@
     <!-- Mobile-friendly navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <i class="fas fa-trophy"></i> MatchPulse
+            <a class="navbar-brand glow-text d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/RawLogo.jpeg') }}" 
+                     alt="TEAM RAW Logo" 
+                     style="height: 70px; width: 70px; object-fit: contain; border-radius: 15px; margin-right: 20px; 
+                            box-shadow: 0 0 20px rgba(0, 102, 255, 0.6), 0 0 40px rgba(255, 0, 51, 0.3); 
+                            border: 3px solid rgba(0, 102, 255, 0.6);
+                            transition: all 0.3s ease;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <span style="display: none; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.5em; color: var(--team-blue);">TEAM RAW</span>
+                    <br>
+                    <span style="font-size: 0.9em; color: var(--accent-red); font-family: 'Rajdhani', sans-serif; font-weight: 600;">MatchPulse</span>
+                </div>
             </a>
             
             <!-- Mobile menu toggle -->

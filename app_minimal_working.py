@@ -963,23 +963,25 @@ Team Registration System
         except Exception as e:
             print(f"❌ Excel initialization error: {e}")
 
+    # Initialize database and Excel for production
+    print("=== Initializing Application ===")
+    init_database()
+    init_excel()
+    
+    # Test database connection
+    test_conn = get_db_connection()
+    if test_conn:
+        print("✅ Database connection test successful")
+        test_conn.close()
+    else:
+        print("❌ Database connection test failed")
+    
+    print("✅ Application initialized successfully")
+
     if __name__ == '__main__':
-        print("=== Starting Server ===")
-        
-        # Initialize database and Excel
-        init_database()
-        init_excel()
-        
-        # Test database connection
-        test_conn = get_db_connection()
-        if test_conn:
-            print("✅ Database connection test successful")
-            test_conn.close()
-        else:
-            print("❌ Database connection test failed")
-        
+        print("=== Starting Development Server ===")
         port = int(PORT)
-        print(f"🚀 Starting server on port {port}")
+        print(f"� BStarting server on port {port}")
         print(f"🌐 Access the application at: http://localhost:{port}")
         print(f"📊 Basic Export: http://localhost:{port}/admin/export")
         print(f"📈 Detailed Export: http://localhost:{port}/admin/export_stats")

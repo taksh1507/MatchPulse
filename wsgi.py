@@ -7,9 +7,12 @@ import os
 # Import the app and socketio from main module
 from app_minimal_working import app, socketio
 
-# Get port from environment
-port = int(os.environ.get('PORT', 5001))
-print(f"🚀 WSGI: Port configured as {port}")
+# Get port from environment (Render will set this automatically)
+port = os.environ.get('PORT')
+if port:
+    print(f"🚀 WSGI: Port configured as {port}")
+else:
+    print("🚀 WSGI: Using default port configuration")
 
 # For gunicorn, we need to expose the socketio app
 application = socketio

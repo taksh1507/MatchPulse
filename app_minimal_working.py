@@ -18,7 +18,7 @@ try:
     # Debug environment loading
     DATABASE_URL = os.environ.get('DATABASE_URL', 'NOT FOUND')
     SECRET_KEY = os.environ.get('SECRET_KEY', 'NOT FOUND')
-    PORT = os.environ.get('PORT', '5001')
+    PORT = os.environ.get('PORT', '8000')
     
     print(f"DATABASE_URL: {DATABASE_URL[:50]}...")
     print(f"SECRET_KEY: {'Found' if SECRET_KEY != 'NOT FOUND' else 'NOT FOUND'}")

@@ -43,8 +43,9 @@ git commit -m "🚀 Complete MatchPulse System - Production Ready
 echo Step 5: Setting main branch...
 git branch -M main
 
-echo Step 6: Pushing to GitHub...
-git push -u origin main
+echo Step 6: Force pushing to GitHub (replacing all remote files)...
+git push -u origin main --force
 
-echo ✅ Push completed! Check https://github.com/taksh1507/MatchPulse1.git
+echo ✅ Force push completed! Check https://github.com/taksh1507/MatchPulse1.git
+echo ⚠️  All remote files have been replaced with your MatchPulse code
 pause

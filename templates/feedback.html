@@ -8,100 +8,101 @@
         <!-- Team RAW Feedback Header -->
         <div class="text-center mb-5">
             <div class="robotics-logo">
-                <img src="{{ url_for('static', filename='images/RawLogo.jpeg') }}" 
-                     alt="TEAM RAW Logo" 
-                     style="height: 150px; width: 150px; object-fit: contain; border-radius: 20px; 
+                <img src="{{ url_for('static', filename='images/RawLogo.jpeg') }}" alt="TEAM RAW Logo" style="height: 150px; width: 150px; object-fit: contain; border-radius: 20px; 
                             box-shadow: 0 0 25px rgba(0, 102, 255, 0.6), 0 0 35px rgba(255, 0, 51, 0.3); 
                             border: 3px solid rgba(0, 102, 255, 0.7);
                             animation: roboticsPulse 3s ease-in-out infinite;"
-                     onerror="this.style.display='none'; document.getElementById('feedback-logo-fallback').style.display='flex';">
-                
+                    onerror="this.style.display='none'; document.getElementById('feedback-logo-fallback').style.display='flex';">
+
                 <!-- Fallback logo for feedback page -->
                 <div id="feedback-logo-fallback" style="display: none; height: 150px; width: 150px; border-radius: 20px; 
                      background: linear-gradient(45deg, var(--accent-blue), var(--accent-red)); 
                      align-items: center; justify-content: center; margin: 0 auto;">
-                    <i class="fas fa-comments" style="font-size: 4rem; color: white; text-shadow: 0 0 20px rgba(255,255,255,0.5);"></i>
+                    <i class="fas fa-comments"
+                        style="font-size: 4rem; color: white; text-shadow: 0 0 20px rgba(255,255,255,0.5);"></i>
                 </div>
             </div>
-            <h1 class="hologram-text mt-4" style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.2rem;">
-                <span style="color: var(--accent-blue); text-shadow: 0 0 20px rgba(0, 102, 255, 0.8);">MISSION</span> 
+            <h1 class="hologram-text mt-4"
+                style="font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 2.2rem;">
+                <span style="color: var(--accent-blue); text-shadow: 0 0 20px rgba(0, 102, 255, 0.8);">MISSION</span>
                 <span style="color: var(--accent-red); text-shadow: 0 0 20px rgba(255, 0, 51, 0.8);">FEEDBACK</span>
             </h1>
-            <p style="color: var(--text-light); font-family: 'Rajdhani', sans-serif; font-size: 1.2em;">
+            <p style="color: #666666; font-family: 'Rajdhani', sans-serif; font-size: 1.2em;">
                 <i class="fas fa-satellite-dish me-2"></i>Help us improve the robotics competition experience
             </p>
         </div>
-        
+
         <div class="card glow-border">
-            <div class="card-header text-center" style="background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-red) 100%);">
+            <div class="card-header text-center"
+                style="background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-red) 100%);">
                 <h4 class="mb-0" style="font-family: 'Orbitron', sans-serif; font-weight: 700;">
                     <i class="fas fa-comments me-2"></i>COMPETITION FEEDBACK PORTAL
                 </h4>
-                <small class="opacity-90" style="font-family: 'Rajdhani', sans-serif;">Your input drives our innovation</small>
+                <small class="opacity-90" style="font-family: 'Rajdhani', sans-serif;">Your input drives our
+                    innovation</small>
             </div>
             <div class="card-body p-4">
                 <!-- Team Information Display -->
                 {% if team_id %}
-                <div class="alert mb-4 data-stream" style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%); border: 1px solid var(--accent-blue);">
+                <div class="alert mb-4 data-stream"
+                    style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 255, 136, 0.1) 100%); border: 1px solid var(--accent-blue);">
                     <h5 style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
                         <i class="fas fa-robot me-2"></i>TEAM IDENTIFICATION
                     </h5>
-                    <p class="mb-0" style="color: var(--text-light);">
-                        <strong>Team ID: <span style="color: var(--accent-green);">{{ team_id }}</span></strong>
+                    <p class="mb-0" style="color: #333333;">
+                        <strong>Team ID: <span style="color: var(--team-blue);">{{ team_id }}</span></strong>
                     </p>
                 </div>
                 {% endif %}
-                
+
                 <!-- Google Form Embed Section -->
-                <div class="google-form-container" style="background: rgba(26, 26, 26, 0.8); border-radius: 15px; padding: 20px; border: 1px solid rgba(0, 212, 255, 0.3);">
+                <div class="google-form-container"
+                    style="background: rgba(26, 26, 26, 0.8); border-radius: 15px; padding: 20px; border: 1px solid rgba(0, 212, 255, 0.3);">
                     <div class="text-center mb-4">
                         <h5 style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
                             <i class="fas fa-external-link-alt me-2"></i>FEEDBACK TRANSMISSION PORTAL
                         </h5>
-                        <p style="color: var(--text-light); font-family: 'Rajdhani', sans-serif;">
+                        <p style="color: #333333; font-family: 'Rajdhani', sans-serif;">
                             Complete our comprehensive feedback form to help improve future robotics competitions
                         </p>
                     </div>
-                    
+
                     <!-- Google Form Iframe -->
-                    <div class="form-embed" style="border-radius: 15px; overflow: hidden; border: 2px solid rgba(0, 212, 255, 0.3);">
-                        <iframe 
-                            src="https://docs.google.com/forms/d/e/1FAIpQLSe_YOUR_GOOGLE_FORM_ID_HERE/viewform?embedded=true&usp=pp_url&entry.TEAM_ID_FIELD={{ team_id if team_id else '' }}" 
-                            width="100%" 
-                            height="800" 
-                            frameborder="0" 
-                            marginheight="0" 
-                            marginwidth="0"
+                    <div class="form-embed"
+                        style="border-radius: 15px; overflow: hidden; border: 2px solid rgba(0, 212, 255, 0.3);">
+                        <iframe
+                            src="https://docs.google.com/forms/d/e/1FAIpQLSe_YOUR_GOOGLE_FORM_ID_HERE/viewform?embedded=true&usp=pp_url&entry.TEAM_ID_FIELD={{ team_id if team_id else '' }}"
+                            width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0"
                             style="background: white; border-radius: 10px;">
                             Loading feedback form...
                         </iframe>
                     </div>
-                    
+
                     <!-- Alternative Link -->
                     <div class="text-center mt-4">
-                        <p style="color: var(--text-light); font-family: 'Rajdhani', sans-serif; margin-bottom: 15px;">
+                        <p style="color: #333333; font-family: 'Rajdhani', sans-serif; margin-bottom: 15px;">
                             <i class="fas fa-info-circle me-2"></i>Form not loading? Use the direct link below:
                         </p>
-                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_YOUR_GOOGLE_FORM_ID_HERE/viewform?usp=pp_url&entry.TEAM_ID_FIELD={{ team_id if team_id else '' }}" 
-                           target="_blank" 
-                           class="btn btn-lg robotics-btn" 
-                           style="background: linear-gradient(45deg, var(--accent-blue) 0%, var(--accent-red) 100%);
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_YOUR_GOOGLE_FORM_ID_HERE/viewform?usp=pp_url&entry.TEAM_ID_FIELD={{ team_id if team_id else '' }}"
+                            target="_blank" class="btn btn-lg robotics-btn"
+                            style="background: linear-gradient(45deg, var(--accent-blue) 0%, var(--accent-red) 100%);
                                   border: none; color: white; font-family: 'Orbitron', sans-serif; font-weight: 700;
                                   text-transform: uppercase; letter-spacing: 1px; padding: 12px 30px;
                                   box-shadow: 0 5px 15px rgba(0, 102, 255, 0.4), 0 2px 8px rgba(255, 0, 51, 0.3); transition: all 0.3s ease;"
-                           onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0, 102, 255, 0.6), 0 4px 15px rgba(255, 0, 51, 0.5)'" 
-                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0, 102, 255, 0.4), 0 2px 8px rgba(255, 0, 51, 0.3)'">
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0, 102, 255, 0.6), 0 4px 15px rgba(255, 0, 51, 0.5)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0, 102, 255, 0.4), 0 2px 8px rgba(255, 0, 51, 0.3)'">
                             <i class="fas fa-external-link-alt me-2"></i>OPEN FEEDBACK FORM
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Instructions -->
-                <div class="alert mt-4" style="background: rgba(255, 107, 53, 0.1); border: 1px solid rgba(255, 107, 53, 0.3); border-radius: 15px;">
+                <div class="alert mt-4"
+                    style="background: rgba(255, 107, 53, 0.1); border: 1px solid rgba(255, 107, 53, 0.3); border-radius: 15px;">
                     <h6 style="color: var(--accent-orange); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
                         <i class="fas fa-lightbulb me-2"></i>FEEDBACK INSTRUCTIONS
                     </h6>
-                    <ul style="color: var(--text-light); font-family: 'Rajdhani', sans-serif; margin-bottom: 0;">
+                    <ul style="color: #333333; font-family: 'Rajdhani', sans-serif; margin-bottom: 0;">
                         <li>📝 Complete all required fields in the form</li>
                         <li>🎯 Be specific in your feedback to help us improve</li>
                         <li>⭐ Rate different aspects of the competition experience</li>
@@ -109,165 +110,175 @@
                         <li>🚀 Your feedback helps shape the future of robotics competitions</li>
                     </ul>
                 </div>
-                    <!-- Team Information -->
-                    <div class="mb-4">
-                        <h5 class="mb-3" style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
-                            <i class="fas fa-robot me-2"></i>TEAM IDENTIFICATION
-                        </h5>
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                                <div class="mb-3">
-                                    <label for="team_id" class="form-label">Team ID</label>
-                                    <input type="text" class="form-control" id="team_id" name="team_id" 
-                                           value="{{ team_id if team_id else '' }}" 
-                                           placeholder="Enter your team ID" required>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="mb-3">
-                                    <label for="email" class="form-label">Email Address</label>
-                                    <input type="email" class="form-control" id="email" name="email" 
-                                           placeholder="your.email@example.com" required>
-                                </div>
+                <!-- Team Information -->
+                <div class="mb-4">
+                    <h5 class="mb-3"
+                        style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                        <i class="fas fa-robot me-2"></i>TEAM IDENTIFICATION
+                    </h5>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="team_id" class="form-label">Team ID</label>
+                                <input type="text" class="form-control" id="team_id" name="team_id"
+                                    value="{{ team_id if team_id else '' }}" placeholder="Enter your team ID" required>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Overall Experience -->
-                    <div class="mb-4">
-                        <h5 class="mb-3" style="color: var(--accent-orange); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
-                            <i class="fas fa-star me-2"></i>OVERALL EXPERIENCE
-                        </h5>
-                        <div class="mb-3">
-                            <label for="overall_rating" class="form-label">How would you rate your overall experience?</label>
-                            <select class="form-select" id="overall_rating" name="overall_rating" required>
-                                <option value="">Select rating</option>
-                                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
-                                <option value="4">⭐⭐⭐⭐ Very Good</option>
-                                <option value="3">⭐⭐⭐ Good</option>
-                                <option value="2">⭐⭐ Fair</option>
-                                <option value="1">⭐ Poor</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Competition Aspects -->
-                    <div class="mb-4">
-                        <h5 class="mb-3" style="color: var(--accent-green); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
-                            <i class="fas fa-cogs me-2"></i>COMPETITION ASPECTS
-                        </h5>
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                                <div class="mb-3">
-                                    <label for="registration_process" class="form-label">Registration Process</label>
-                                    <select class="form-select" id="registration_process" name="registration_process" required>
-                                        <option value="">Rate this aspect</option>
-                                        <option value="5">Excellent</option>
-                                        <option value="4">Very Good</option>
-                                        <option value="3">Good</option>
-                                        <option value="2">Fair</option>
-                                        <option value="1">Poor</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="mb-3">
-                                    <label for="competition_organization" class="form-label">Competition Organization</label>
-                                    <select class="form-select" id="competition_organization" name="competition_organization" required>
-                                        <option value="">Rate this aspect</option>
-                                        <option value="5">Excellent</option>
-                                        <option value="4">Very Good</option>
-                                        <option value="3">Good</option>
-                                        <option value="2">Fair</option>
-                                        <option value="1">Poor</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-md-6">
-                                <div class="mb-3">
-                                    <label for="venue_facilities" class="form-label">Venue & Facilities</label>
-                                    <select class="form-select" id="venue_facilities" name="venue_facilities" required>
-                                        <option value="">Rate this aspect</option>
-                                        <option value="5">Excellent</option>
-                                        <option value="4">Very Good</option>
-                                        <option value="3">Good</option>
-                                        <option value="2">Fair</option>
-                                        <option value="1">Poor</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="mb-3">
-                                    <label for="staff_support" class="form-label">Staff Support</label>
-                                    <select class="form-select" id="staff_support" name="staff_support" required>
-                                        <option value="">Rate this aspect</option>
-                                        <option value="5">Excellent</option>
-                                        <option value="4">Very Good</option>
-                                        <option value="3">Good</option>
-                                        <option value="2">Fair</option>
-                                        <option value="1">Poor</option>
-                                    </select>
-                                </div>
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    placeholder="your.email@example.com" required>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Feedback Comments -->
-                    <div class="mb-4">
-                        <h5 class="mb-3" style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
-                            <i class="fas fa-comment-dots me-2"></i>DETAILED FEEDBACK
-                        </h5>
-                        <div class="mb-3">
-                            <label for="what_went_well" class="form-label">What went well?</label>
-                            <textarea class="form-control" id="what_went_well" name="what_went_well" rows="3" 
-                                      placeholder="Tell us what you enjoyed about the competition..."></textarea>
+                <!-- Overall Experience -->
+                <div class="mb-4">
+                    <h5 class="mb-3"
+                        style="color: var(--accent-orange); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                        <i class="fas fa-star me-2"></i>OVERALL EXPERIENCE
+                    </h5>
+                    <div class="mb-3">
+                        <label for="overall_rating" class="form-label">How would you rate your overall
+                            experience?</label>
+                        <select class="form-select" id="overall_rating" name="overall_rating" required>
+                            <option value="">Select rating</option>
+                            <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                            <option value="4">⭐⭐⭐⭐ Very Good</option>
+                            <option value="3">⭐⭐⭐ Good</option>
+                            <option value="2">⭐⭐ Fair</option>
+                            <option value="1">⭐ Poor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Competition Aspects -->
+                <div class="mb-4">
+                    <h5 class="mb-3"
+                        style="color: var(--accent-green); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                        <i class="fas fa-cogs me-2"></i>COMPETITION ASPECTS
+                    </h5>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="registration_process" class="form-label">Registration Process</label>
+                                <select class="form-select" id="registration_process" name="registration_process"
+                                    required>
+                                    <option value="">Rate this aspect</option>
+                                    <option value="5">Excellent</option>
+                                    <option value="4">Very Good</option>
+                                    <option value="3">Good</option>
+                                    <option value="2">Fair</option>
+                                    <option value="1">Poor</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="improvements" class="form-label">What could be improved?</label>
-                            <textarea class="form-control" id="improvements" name="improvements" rows="3" 
-                                      placeholder="Share your suggestions for improvement..."></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="additional_comments" class="form-label">Additional Comments</label>
-                            <textarea class="form-control" id="additional_comments" name="additional_comments" rows="3" 
-                                      placeholder="Any other feedback or suggestions..."></textarea>
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="competition_organization" class="form-label">Competition
+                                    Organization</label>
+                                <select class="form-select" id="competition_organization"
+                                    name="competition_organization" required>
+                                    <option value="">Rate this aspect</option>
+                                    <option value="5">Excellent</option>
+                                    <option value="4">Very Good</option>
+                                    <option value="3">Good</option>
+                                    <option value="2">Fair</option>
+                                    <option value="1">Poor</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Future Participation -->
-                    <div class="mb-4">
-                        <h5 class="mb-3" style="color: var(--accent-orange); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
-                            <i class="fas fa-rocket me-2"></i>FUTURE MISSIONS
-                        </h5>
-                        <div class="mb-3">
-                            <label for="participate_again" class="form-label">Would you participate in future competitions?</label>
-                            <select class="form-select" id="participate_again" name="participate_again" required>
-                                <option value="">Select option</option>
-                                <option value="definitely">🚀 Definitely Yes</option>
-                                <option value="probably">✅ Probably Yes</option>
-                                <option value="maybe">🤔 Maybe</option>
-                                <option value="probably_not">❌ Probably Not</option>
-                                <option value="definitely_not">🚫 Definitely Not</option>
-                            </select>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="venue_facilities" class="form-label">Venue & Facilities</label>
+                                <select class="form-select" id="venue_facilities" name="venue_facilities" required>
+                                    <option value="">Rate this aspect</option>
+                                    <option value="5">Excellent</option>
+                                    <option value="4">Very Good</option>
+                                    <option value="3">Good</option>
+                                    <option value="2">Fair</option>
+                                    <option value="1">Poor</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="recommend_others" class="form-label">Would you recommend this competition to others?</label>
-                            <select class="form-select" id="recommend_others" name="recommend_others" required>
-                                <option value="">Select option</option>
-                                <option value="definitely">🌟 Definitely</option>
-                                <option value="probably">👍 Probably</option>
-                                <option value="maybe">🤷 Maybe</option>
-                                <option value="probably_not">👎 Probably Not</option>
-                                <option value="definitely_not">❌ Definitely Not</option>
-                            </select>
+                        <div class="col-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="staff_support" class="form-label">Staff Support</label>
+                                <select class="form-select" id="staff_support" name="staff_support" required>
+                                    <option value="">Rate this aspect</option>
+                                    <option value="5">Excellent</option>
+                                    <option value="4">Very Good</option>
+                                    <option value="3">Good</option>
+                                    <option value="2">Fair</option>
+                                    <option value="1">Poor</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Submit Section -->
-                    <div class="d-grid gap-3">
-                        <button type="submit" class="btn btn-lg py-3 robotics-btn" style="
+                <!-- Feedback Comments -->
+                <div class="mb-4">
+                    <h5 class="mb-3"
+                        style="color: var(--accent-blue); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                        <i class="fas fa-comment-dots me-2"></i>DETAILED FEEDBACK
+                    </h5>
+                    <div class="mb-3">
+                        <label for="what_went_well" class="form-label">What went well?</label>
+                        <textarea class="form-control" id="what_went_well" name="what_went_well" rows="3"
+                            placeholder="Tell us what you enjoyed about the competition..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="improvements" class="form-label">What could be improved?</label>
+                        <textarea class="form-control" id="improvements" name="improvements" rows="3"
+                            placeholder="Share your suggestions for improvement..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="additional_comments" class="form-label">Additional Comments</label>
+                        <textarea class="form-control" id="additional_comments" name="additional_comments" rows="3"
+                            placeholder="Any other feedback or suggestions..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Future Participation -->
+                <div class="mb-4">
+                    <h5 class="mb-3"
+                        style="color: var(--accent-orange); font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                        <i class="fas fa-rocket me-2"></i>FUTURE MISSIONS
+                    </h5>
+                    <div class="mb-3">
+                        <label for="participate_again" class="form-label">Would you participate in future
+                            competitions?</label>
+                        <select class="form-select" id="participate_again" name="participate_again" required>
+                            <option value="">Select option</option>
+                            <option value="definitely">🚀 Definitely Yes</option>
+                            <option value="probably">✅ Probably Yes</option>
+                            <option value="maybe">🤔 Maybe</option>
+                            <option value="probably_not">❌ Probably Not</option>
+                            <option value="definitely_not">🚫 Definitely Not</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="recommend_others" class="form-label">Would you recommend this competition to
+                            others?</label>
+                        <select class="form-select" id="recommend_others" name="recommend_others" required>
+                            <option value="">Select option</option>
+                            <option value="definitely">🌟 Definitely</option>
+                            <option value="probably">👍 Probably</option>
+                            <option value="maybe">🤷 Maybe</option>
+                            <option value="probably_not">👎 Probably Not</option>
+                            <option value="definitely_not">❌ Definitely Not</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Submit Section -->
+                <div class="d-grid gap-3">
+                    <button type="submit" class="btn btn-lg py-3 robotics-btn" style="
                             background: linear-gradient(45deg, var(--accent-blue) 0%, var(--accent-red) 100%);
                             border: none;
                             color: white;
@@ -277,14 +288,15 @@
                             letter-spacing: 1px;
                             box-shadow: 0 5px 15px rgba(0, 102, 255, 0.4), 0 2px 8px rgba(255, 0, 51, 0.3);
                             transition: all 0.3s ease;
-                        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0, 102, 255, 0.6), 0 4px 15px rgba(255, 0, 51, 0.5)'" 
-                           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0, 102, 255, 0.4), 0 2px 8px rgba(255, 0, 51, 0.3)'">
-                            <i class="fas fa-paper-plane me-2"></i>TRANSMIT FEEDBACK
-                        </button>
-                        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-home"></i> Return to Base
-                        </a>
-                    </div>
+                        "
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0, 102, 255, 0.6), 0 4px 15px rgba(255, 0, 51, 0.5)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(0, 102, 255, 0.4), 0 2px 8px rgba(255, 0, 51, 0.3)'">
+                        <i class="fas fa-paper-plane me-2"></i>TRANSMIT FEEDBACK
+                    </button>
+                    <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Return to Base
+                    </a>
+                </div>
                 </form>
             </div>
         </div>
@@ -292,12 +304,14 @@
         <!-- Mission Briefing Card -->
         <div class="card mt-4 glow-border">
             <div class="card-body text-center">
-                <h6 class="mb-1" style="font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--accent-blue);">
+                <h6 class="mb-1"
+                    style="font-family: 'Rajdhani', sans-serif; font-weight: 600; color: var(--accent-blue);">
                     FEEDBACK MISSION COMPLETE
                 </h6>
-                <small style="color: var(--text-light); font-family: 'Rajdhani', sans-serif;">
+                <small style="color: #666666; font-family: 'Rajdhani', sans-serif;">
                     <i class="fas fa-satellite me-1"></i>
-                    Your feedback helps us enhance future robotics competitions and improve the experience for all participants
+                    Your feedback helps us enhance future robotics competitions and improve the experience for all
+                    participants
                 </small>
             </div>
         </div>
@@ -308,29 +322,31 @@
 {% block scripts %}
 <style>
     /* Additional feedback form styles */
-    .form-control, .form-select {
-        background: rgba(26, 26, 26, 0.8) !important;
-        border: 1px solid rgba(0, 212, 255, 0.3) !important;
-        color: var(--text-light) !important;
+    .form-control,
+    .form-select {
+        background: white !important;
+        border: 2px solid var(--team-blue) !important;
+        color: #333333 !important;
         font-family: 'Rajdhani', sans-serif;
     }
-    
-    .form-control:focus, .form-select:focus {
-        background: rgba(26, 26, 26, 0.9) !important;
-        border-color: var(--accent-blue) !important;
-        box-shadow: 0 0 10px rgba(0, 212, 255, 0.3) !important;
-        color: var(--text-light) !important;
+
+    .form-control:focus,
+    .form-select:focus {
+        background: white !important;
+        border-color: var(--team-red) !important;
+        box-shadow: 0 0 10px rgba(30, 90, 168, 0.3) !important;
+        color: #333333 !important;
     }
-    
+
     .form-label {
-        color: var(--text-light) !important;
+        color: #333333 !important;
         font-family: 'Rajdhani', sans-serif;
-        font-weight: 500;
+        font-weight: 600;
         text-transform: uppercase;
         font-size: 0.9em;
         letter-spacing: 0.5px;
     }
-    
+
     textarea.form-control {
         min-height: 80px;
         resize: vertical;

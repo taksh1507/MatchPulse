@@ -27,6 +27,15 @@ try:
     # Import Flask components
     from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
     from flask_socketio import SocketIO, emit
+    
+    # Try to import compression (optional)
+    try:
+        from flask_compress import Compress
+        COMPRESSION_AVAILABLE = True
+    except ImportError:
+        COMPRESSION_AVAILABLE = False
+        print("⚠️ Flask-Compress not available, using manual optimization")
+    
     print("✅ Flask imports successful")
 
     # Import database components
@@ -66,16 +75,55 @@ try:
     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000  # 1 year cache for static files
     app.config['TEMPLATES_AUTO_RELOAD'] = False  # Disable template auto-reload in production
     app.config['JSON_SORT_KEYS'] = False  # Don't sort JSON keys for faster response
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False  # Disable JSON pretty printing
     
-    # Add compression for responses
+    # Enable compression if available
+    if COMPRESSION_AVAILABLE:
+        app.config['COMPRESS_MIMETYPES'] = ['text/html', 'text/css', 'text/xml', 'application/json', 'application/javascript']
+        compress = Compress(app)
+        print("✅ Compression enabled")
+    else:
+        print("⚠️ Using manual optimization instead of compression")
+    
+    # Add caching and optimization for responses
     @app.after_request
     def after_request(response):
         # Add caching headers for static content
         if request.endpoint == 'static':
             response.headers['Cache-Control'] = 'public, max-age=31536000'
-        # Add security headers
+            response.headers['ETag'] = f'"{hash(str(response.data))}"'
+        
+        # Add aggressive caching for API endpoints
+        if request.endpoint in ['get_stats', 'get_teams']:
+            response.headers['Cache-Control'] = 'public, max-age=30'
+        
+        # Add caching for page routes
+        if request.endpoint in ['index', 'register_page', 'validate_page']:
+            response.headers['Cache-Control'] = 'public, max-age=300'
+        elif request.endpoint == 'monitor_dashboard':
+            response.headers['Cache-Control'] = 'public, max-age=60'
+        elif request.endpoint == 'admin_panel':
+            response.headers['Cache-Control'] = 'private, max-age=30'
+        
+        # Add performance headers
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['X-Frame-Options'] = 'DENY'
+        response.headers['X-XSS-Protection'] = '1; mode=block'
+        
+        # Manual minification for HTML responses (if compression not available)
+        if not COMPRESSION_AVAILABLE and response.content_type.startswith('text/html'):
+            try:
+                # Simple HTML minification
+                html = response.get_data(as_text=True)
+                # Remove extra whitespace between tags
+                import re
+                html = re.sub(r'>\s+<', '><', html)
+                # Remove extra whitespace in text
+                html = re.sub(r'\s+', ' ', html)
+                response.set_data(html)
+            except:
+                pass  # If minification fails, use original
+        
         return response
 
     # Email configuration
@@ -93,10 +141,11 @@ try:
     EXCEL_FILE = 'teams_backup.xlsx'
     teams_data = []
     
-    # Performance cache
+    # Performance cache with longer TTL for faster responses
     cache = {
-        'stats': {'data': None, 'timestamp': 0, 'ttl': 30},  # Cache stats for 30 seconds
-        'teams': {'data': None, 'timestamp': 0, 'ttl': 10},  # Cache teams for 10 seconds
+        'stats': {'data': None, 'timestamp': 0, 'ttl': 60},  # Cache stats for 60 seconds
+        'teams': {'data': None, 'timestamp': 0, 'ttl': 30},  # Cache teams for 30 seconds
+        'admin_teams': {'data': None, 'timestamp': 0, 'ttl': 60},  # Cache admin teams for 60 seconds
     }
 
     print("✅ Flask app and SocketIO created", flush=True)
@@ -503,17 +552,12 @@ Team Registration System
     @app.route('/')
     def index():
         """Home page with navigation - optimized"""
-        response = app.make_response(render_template('index.html'))
-        # Add caching headers for faster loading
-        response.headers['Cache-Control'] = 'public, max-age=300'  # 5 minutes
-        return response
+        return render_template('index.html')
 
     @app.route('/register')
     def register_page():
         """Team registration page - optimized"""
-        response = app.make_response(render_template('register.html'))
-        response.headers['Cache-Control'] = 'public, max-age=300'  # 5 minutes
-        return response
+        return render_template('register.html')
 
     @app.route('/register', methods=['POST'])
     def register_team():
@@ -608,9 +652,7 @@ Team Registration System
     @app.route('/validate')
     def validate_page():
         """QR code validation page - optimized"""
-        response = app.make_response(render_template('validate.html'))
-        response.headers['Cache-Control'] = 'public, max-age=300'  # 5 minutes
-        return response
+        return render_template('validate.html')
 
     @app.route('/validate', methods=['POST'])
     def validate_qr():
@@ -676,9 +718,7 @@ Team Registration System
     @app.route('/monitor')
     def monitor_dashboard():
         """Live monitor dashboard - optimized"""
-        response = app.make_response(render_template('monitor.html'))
-        response.headers['Cache-Control'] = 'public, max-age=60'  # 1 minute (shorter for real-time data)
-        return response
+        return render_template('monitor.html')
 
     @app.route('/monitor/complete_team', methods=['POST'])
     def complete_team_from_monitor():

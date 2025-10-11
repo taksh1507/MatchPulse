@@ -68,7 +68,7 @@ try:
     app.config['MAIL_PASSWORD'] = os.environ.get('SMTP_PASSWORD')
     app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('SMTP_USERNAME')
 
-    socketio = SocketIO(app, cors_allowed_origins="*")
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
     # Excel file path and in-memory storage
     EXCEL_FILE = 'teams_backup.xlsx'

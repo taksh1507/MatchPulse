@@ -1,5 +1,12 @@
 # MatchPulse - Team Registration System
 
+[![Backend: Flask](https://img.shields.io/badge/backend-Flask-000000?logo=flask&logoColor=white)](app_ngrok_optimized.py)
+[![Python](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)](requirements.txt)
+[![Database: PostgreSQL / SQLite](https://img.shields.io/badge/database-PostgreSQL%20%7C%20SQLite-4169E1?logo=postgresql&logoColor=white)](requirements.txt)
+[![Real-time: Socket.IO](https://img.shields.io/badge/realtime-Socket.IO-000000?logo=socket.io&logoColor=white)](app_ngrok_optimized.py)
+[![Frontend: Bootstrap 5](https://img.shields.io/badge/frontend-Bootstrap%205-7952B3?logo=bootstrap&logoColor=white)](templates)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A comprehensive team registration and tournament management system built with Flask, featuring real-time monitoring, QR code validation, and mobile-responsive design.
 
 ## 🚀 Features
@@ -221,6 +228,20 @@ The app automatically handles database schema updates on startup.
 3. Commit your changes (`git commit -m 'Add amazing feature'`)
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
+
+## ✅ Verification Status
+
+Verified in this audit (Python 3.14.6):
+
+| Check | Result |
+| --- | --- |
+| Package imports (flask, flask-socketio, qrcode, openpyxl, cryptography, flask-mail, flask-compress, python-dotenv, eventlet, psycopg2) | PASS |
+| App startup (`python app_ngrok_optimized.py`, SQLite fallback) | PASS |
+| Public endpoints `GET /`, `GET /queue`, `GET /register` | 200 / 200 / 200 |
+
+Notes:
+- `requirements.txt` pins `psycopg2-binary==2.9.9` and `eventlet==0.33.3`, which have no Python 3.14 wheels. Installing unpinned newer versions resolves this; the app falls back to SQLite when PostgreSQL is unavailable.
+- No test suite or CI workflow exists in the repository; verification above is runtime-level (HTTP), not automated.
 
 ## 📄 License
 

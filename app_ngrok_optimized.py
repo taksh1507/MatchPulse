@@ -2483,7 +2483,7 @@ try:
         print("=" * 70)
         
         # Run the app optimized for ngrok
-        socketio.run(app, host='0.0.0.0', port=port, debug=True, allow_unsafe_werkzeug=True)
+        socketio.run(app, host='127.0.0.1', port=port, debug=False, allow_unsafe_werkzeug=True)
 
 except Exception as e:
     print(f"❌ MatchPulse Ngrok Edition startup failed: {e}", flush=True)

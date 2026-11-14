@@ -30,4 +30,4 @@ Validate startup with isolated local PostgreSQL and disabled external email; aud
 
 No database migration, dependency-version changes, deployment, merge, full UI redesign or measured performance improvement is included in this first pass. No source bug is claimed fixed in audit-only changes. Complete the deeper code, security, integration and visual review before declaring this project production-ready.
 
-Pull request: pending creation for writable repositories; publication blocked for repositories without usable push access.
+Pull request: https://github.com/taksh1507/MatchPulse/pull/1
